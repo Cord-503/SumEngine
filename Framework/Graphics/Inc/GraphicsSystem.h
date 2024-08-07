@@ -43,6 +43,7 @@ namespace SumEngine::Graphics
 		ID3D11DeviceContext* GetContext();
 
 	private:
+		static LRESULT CALLBACK GraphicsSystemMessageHandler(HWND handle, UINT message, WPARAM wparam, LPARAM lParam);
 
 		ID3D11Device* mD3DDevice = nullptr;
 		ID3D11DeviceContext* mImmediateContext = nullptr;
@@ -58,5 +59,4 @@ namespace SumEngine::Graphics
 		Color mClearColor = Colors::Black;
 		UINT mVSync = 1;
 	};
-
 }

@@ -7,10 +7,11 @@ namespace SumEngine::Core
 	public:
 		void Initialize(HINSTANCE instance, const std::wstring& appName, uint32_t width, uint32_t height);
 		void Terminate();
+
 		void ProcessMessage();
+
 		HWND GetWindowHandle() const;
 		bool IsActive() const;
-
 
 	private:
 		HINSTANCE mInstance = nullptr;
@@ -19,5 +20,4 @@ namespace SumEngine::Core
 		std::wstring mAppName;
 		bool mActive;
 	};
-
 }

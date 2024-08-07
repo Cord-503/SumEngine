@@ -7,8 +7,6 @@
 #include <objbase.h>
 #include <Windows.h>
 
-
-
 // std headers
 #include <algorithm>
 #include <array>

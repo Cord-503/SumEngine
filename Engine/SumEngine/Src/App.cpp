@@ -5,6 +5,7 @@
 using namespace SumEngine;
 using namespace SumEngine::Core;
 using namespace SumEngine::Graphics;
+using namespace SumEngine::Input;
 
 void App::Run(const AppConfig& config)
 {
@@ -20,11 +21,15 @@ void App::Run(const AppConfig& config)
 	// init singletons
 	auto handle = myWindow.GetWindowHandle();
 	GraphicsSystem::StaticInitialize(handle, false);
-	
+
+	InputSystem::StaticInitialize(handle);
+
 
 	// start state
 	ASSERT(mCurrentState != nullptr, "App: no current state available");
 	mCurrentState->Initialize();
+
+	InputSystem* input = InputSystem::Get();
 
 	// run program
 	mRunning = true;
@@ -32,7 +37,9 @@ void App::Run(const AppConfig& config)
 	{
 		myWindow.ProcessMessage();
 
-		if (!myWindow.IsActive())
+		input->Update();
+
+		if (!myWindow.IsActive() || input->IsKeyPressed(KeyCode::ESCAPE))
 		{
 			Quit();
 		}
@@ -53,13 +60,20 @@ void App::Run(const AppConfig& config)
 			mCurrentState->Update(deltaTime);
 		}
 
-		// rendering
+		GraphicsSystem* gs = GraphicsSystem::Get();
+		gs->BeginRender();
+		// This is where we send information from cpu to gpu
+			mCurrentState->Render();
+
+		gs->EndRender();
 	}
 	// end state
 	mCurrentState->Terminate();
 
 	// terminate singletons
+	InputSystem::StaticTerminate();
 	GraphicsSystem::StaticTerminate();
+	
 	myWindow.Terminate();
 }
 

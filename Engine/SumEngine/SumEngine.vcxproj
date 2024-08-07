@@ -156,6 +156,12 @@
     <ProjectReference Include="..\..\Framework\Graphics\Graphics.vcxproj">
       <Project>{4ed2e746-1d15-4c41-8e77-c6487f43b778}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Input\Input.vcxproj">
+      <Project>{3629f01a-6fed-42eb-b308-e9f7f1346eaf}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Framework\Math\Math.vcxproj">
+      <Project>{d1ca39ee-e8d8-4137-ada1-9e35f5d47ac2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
