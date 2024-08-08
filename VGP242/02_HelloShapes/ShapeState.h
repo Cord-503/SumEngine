@@ -59,7 +59,7 @@ protected:
 	void CreateShape() override;
 };
 
-class HeartShapeState :public ShapeState
+class TreeShapeState :public ShapeState
 {
 public:
 	void Update(float deltaTime) override;
