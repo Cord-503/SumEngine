@@ -21,8 +21,8 @@ void App::Run(const AppConfig& config)
 	// init singletons
 	auto handle = myWindow.GetWindowHandle();
 	GraphicsSystem::StaticInitialize(handle, false);
-
 	InputSystem::StaticInitialize(handle);
+	DebugUI::StaticInitialize(handle, false, true);
 
 
 	// start state
@@ -42,6 +42,7 @@ void App::Run(const AppConfig& config)
 		if (!myWindow.IsActive() || input->IsKeyPressed(KeyCode::ESCAPE))
 		{
 			Quit();
+			break;
 		}
 
 		if (mNextState != nullptr)
@@ -60,17 +61,20 @@ void App::Run(const AppConfig& config)
 			mCurrentState->Update(deltaTime);
 		}
 
+		// This is where we send information from cpu to gpu
 		GraphicsSystem* gs = GraphicsSystem::Get();
 		gs->BeginRender();
-		// This is where we send information from cpu to gpu
-		mCurrentState->Render();
-
+			mCurrentState->Render();
+			DebugUI::BeginRender();
+				mCurrentState->DebugUI();
+			DebugUI::EndRender();
 		gs->EndRender();
 	}
 	// end state
 	mCurrentState->Terminate();
 
 	// terminate singletons
+	DebugUI::StaticTerminate();
 	InputSystem::StaticTerminate();
 	GraphicsSystem::StaticTerminate();
 	
