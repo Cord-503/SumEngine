@@ -9,10 +9,8 @@ using namespace SumEngine::Input;
 
 void GameState::Initialize()
 {
-	//MeshPC mesh = MeshBuilder::CreateCubePC(1.0f);
-	//MeshPX mesh = MeshBuilder::CreatePlanePX(5, 5, 1.0f);
 	MeshPX mesh = MeshBuilder::CreateSpherePX(60, 60, 1.0f);
-	//MeshPX mesh = MeshBuilder::CreateSkySpherePX(50, 50, 100.0f);
+	
 	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
 	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 
@@ -124,4 +122,173 @@ void GameState::DebugUI()
 	}
 	
 	ImGui::End();
+}
+
+void MeshPCCube::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPC mesh = MeshBuilder::CreateCubePC(1.0f);
+	mMeshBuffer.Initialize<MeshPC>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTransform.fx";
+	mVertexShader.Initialize<VertexPC>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+}
+
+void MeshPCCube::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Rect");
+	}
+}
+
+void MeshPCRect::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPC mesh = MeshBuilder::CreateRectPC(1.0f, 2.0f, 3.0f);
+	mMeshBuffer.Initialize<MeshPC>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTransform.fx";
+	mVertexShader.Initialize<VertexPC>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+}
+
+void MeshPCRect::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Plane");
+	}
+}
+
+void MeshPCPlane::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPC mesh = MeshBuilder::CreatePlanePC(10, 10, 0.2f);
+	mMeshBuffer.Initialize<MeshPC>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTransform.fx";
+	mVertexShader.Initialize<VertexPC>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+}
+
+void MeshPCPlane::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Sphere");
+	}
+}
+
+void MeshPCSphere::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPC mesh = MeshBuilder::CreateSpherePC(100, 100, 1.0f);
+	mMeshBuffer.Initialize<MeshPC>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTransform.fx";
+	mVertexShader.Initialize<VertexPC>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+}
+
+void MeshPCSphere::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Cylinder");
+	}
+}
+
+void MeshPCCylinder::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPC mesh = MeshBuilder::CreateCylinderPC(100, 5);
+	mMeshBuffer.Initialize<MeshPC>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTransform.fx";
+	mVertexShader.Initialize<VertexPC>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+}
+
+void MeshPCCylinder::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Skybox");
+	}
+}
+
+void MeshPXSkybox::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPX mesh = MeshBuilder::CreateSkyboxPX(60.0f);
+	mMeshBuffer.Initialize<MeshPX>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTexture.fx";
+	mVertexShader.Initialize<VertexPX>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+
+
+	mDiffuseTexture.Initialize("../../Assets/Images/skysphere/sky.jpg");
+	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Wrap);
+}
+
+void MeshPXSkybox::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Skysphere");
+	}
+}
+
+void MeshPXSkysphere::Initialize()
+{
+	mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+
+	MeshPX mesh = MeshBuilder::CreateSkySpherePX(100, 100, 60.0f);
+	mMeshBuffer.Initialize<MeshPX>(mesh);
+	mConstantBuffer.Initialize(sizeof(Matrix4));
+
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoTexture.fx";
+	mVertexShader.Initialize<VertexPX>(shaderFile);
+	mPixelShader.Initialize(shaderFile);
+
+
+	mDiffuseTexture.Initialize("../../Assets/Images/skysphere/sky.jpg");
+	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Wrap);
+}
+
+void MeshPXSkysphere::Update(float deltaTime)
+{
+	UpdateCamera(deltaTime);
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Cube");
+	}
 }

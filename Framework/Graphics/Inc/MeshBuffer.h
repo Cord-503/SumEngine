@@ -29,6 +29,8 @@ namespace SumEngine::Graphics
 
 		void SetTopology(Topology topology);
 
+		void Update(const void* vertices, uint32_t vertexCount);
+
 		void Render() const;
 
 	private:

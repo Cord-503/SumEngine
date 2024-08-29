@@ -22,3 +22,52 @@ protected:
 	SumEngine::Graphics::Texture mDiffuseTexture;
 	SumEngine::Graphics::Sampler mSampler;
 };
+
+class MeshPCCube : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPCRect : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPCPlane : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPCSphere : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPCCylinder : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPXSkybox : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
+
+class MeshPXSkysphere : public GameState
+{
+public:
+	void Initialize() override;
+	void Update(float deltaTime) override;
+};
