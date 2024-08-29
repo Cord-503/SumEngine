@@ -10,7 +10,6 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int)
 	config.appname = L"Hello Cube";
 
 	App& myApp = MainApp();
-	myApp.AddState<ShapeState>("TriangleStateShape");
 	myApp.Run(config);
 	return(0);
 }

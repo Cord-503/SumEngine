@@ -7,7 +7,7 @@ using namespace SumEngine;
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int)
 {
 	AppConfig config;
-	config.appname = L"Hello Shapes";
+	config.appname = L"Hello MeshBuilder";
 
 	App& myApp = MainApp();
 	myApp.AddState<GameState>("TriangleStateShape");
