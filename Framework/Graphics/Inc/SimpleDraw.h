@@ -21,7 +21,14 @@ namespace SumEngine::Graphics
 		void AddFilledAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, const Color& color);
 
 		void AddSphere(int slices, int rings, float radius, const Math::Vector3& pos, const Color& color);
+		void AddFilledSphere(int slices, int rings, float radius, const Math::Vector3& pos, const Color& color);
 		void AddGroundCircle(int slices, float radius, const Math::Vector3& pos, const Color& color);
+
+		void AddOval(int slices, int rings, float r1, float r2, const Math::Vector3& pos, const Color& color);
+		void AddOval(int slices, int rings, float radiusX, float radiusY, float radiusZ, const Math::Vector3& pos, const Color& color);
+		void AddFilledOval(int slices, int rings, float radiusX, float radiusY, float radiusZ, const Math::Vector3& pos, const Color& color);
+
+		void AddCone(int slices, float radius, const Math::Vector3& circlePos, const Math::Vector3& coneTip, const Color& color);
 		
 		void AddGroundPlane(float size, const Color& color);
 
