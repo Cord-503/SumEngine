@@ -1,5 +1,5 @@
 #include "GameState.h"
-
+using namespace std;
 using namespace SumEngine;
 using namespace SumEngine::Math;
 using namespace SumEngine::Graphics;
@@ -39,12 +39,11 @@ const char* cTextureLocations[] =
 void GameState::Initialize()
 {
 	// Set Cameras
-	mCamera.SetPosition({ 0.0f, 1.0f, -200.0f });
+	mCamera.SetPosition({ 0.0f, 150.0f, -600.0f });
 	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 	mRenderTargetCamera.SetPosition({ 0.0f, 0.0f, -300.0f });
 	mRenderTargetCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 	mRenderTargetCamera.SetAspectRatio(1.0f);
-
 
 	// Create Meshes
 	mObjects[(int)SolarSystem::Sun].mMeshBuffer.Initialize<MeshPX>(MeshBuilder::CreateSpherePX(100, 100, 109.0f));
@@ -175,14 +174,15 @@ void GameState::UpdateCamera(float deltaTime)
 }
 
 float totalTime = 0.0f;
-int currentRenderTarget = 0;
-float renderTargetDistance = 0.0f;
-bool ringsToggle = true;
 void GameState::Update(float deltaTime)
 {
 	totalTime += deltaTime / 10.0f;
 	UpdateCamera(deltaTime);
 }
+
+int currentRenderTarget = 0;
+float renderTargetDistance = 0.0f;
+bool ringsToggle = true;
 
 void GameState::Render()
 {
@@ -192,13 +192,12 @@ void GameState::Render()
 		for (int i = 1; i < (int)SolarSystem::Galaxy; i++)
 		{
 			SimpleDraw::AddGroundCircle(100, mObjects[i].distanceFromSun, { 0,0,0 }, Colors::Gray);
-			SimpleDraw::AddGroundCircle(100, mObjects[i].distanceFromSun, { 0,0,0 }, Colors::Gray);
 		}
 		// Saturn Ring
 		{
-			Matrix4 ringWorld = Matrix4::RotationY(mObjects[(int)SolarSystem::Saturn].rotationSpeed * totalTime) * Matrix4::Translation(Vector3::ZAxis * mObjects[(int)SolarSystem::Saturn].distanceFromSun) * Matrix4::RotationY(mObjects[(int)SolarSystem::Saturn].orbitSpeed * totalTime / 10.0f);
-			Vector3 ringVec = { ringWorld._41,ringWorld._42,ringWorld._43 };
-			SimpleDraw::AddGroundCircle(100, 25, ringVec, Colors::White);
+			Matrix4 ringWorldPosition = Matrix4::RotationY(mObjects[(int)SolarSystem::Saturn].rotationSpeed * totalTime) * Matrix4::Translation(Vector3::ZAxis * mObjects[(int)SolarSystem::Saturn].distanceFromSun) * Matrix4::RotationY(mObjects[(int)SolarSystem::Saturn].orbitSpeed * totalTime / 10.0f);
+			Vector3 ringPosition = { ringWorldPosition._41,ringWorldPosition._42,ringWorldPosition._43 };
+			SimpleDraw::AddGroundCircle(100, 25, ringPosition, Colors::White);
 		}
 
 		SimpleDraw::Render(mCamera);
@@ -236,14 +235,13 @@ void GameState::Render()
 	mConstantBuffer.Update(&wvp);
 	mConstantBuffer.BindVS(0);
 
-	mRenderTargetCamera.SetPosition({ 0.0f, 0.0f, renderTargetDistance});
+	mRenderTargetCamera.SetPosition({ 0.0f, 0.0f, renderTargetDistance });
 	mRenderTarget.BeginRender();
-		mObjects[currentRenderTarget].mMeshBuffer.Render();
+	mObjects[currentRenderTarget].mMeshBuffer.Render();
 	mRenderTarget.EndRender();
 }
 
 bool buttonValue = false;
-int intValue = 0;
 void GameState::DebugUI()
 {
 	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
@@ -259,15 +257,6 @@ void GameState::DebugUI()
 	ImGui::DragFloat("RenderTargetDistance", &renderTargetDistance, 1.0f, -200.0f, 0.0f);
 	ImGui::DragFloat("OrbitSpeed", &mObjects[currentDrawType].orbitSpeed);
 	ImGui::DragFloat("RotationSpeed", &mObjects[currentDrawType].rotationSpeed);
-
-	ImGui::Image(
-		mRenderTarget.GetRawData(),
-		{ 256, 256 },
-		{ 0, 0 },	//uv0
-		{ 1, 1 },	//uv1
-		{ 1, 1, 1, 1 },
-		{ 1, 1, 1, 1 });
-
 
 	ImGui::End();
 }
