@@ -24,6 +24,7 @@ void App::Run(const AppConfig& config)
 	InputSystem::StaticInitialize(handle);
 	DebugUI::StaticInitialize(handle, false, true);
 	SimpleDraw::StaticInitialize(config.maxDrawLines);
+	TextureCache::StaticInitialize("../../Assets/Images");
 
 
 	// start state
@@ -75,6 +76,7 @@ void App::Run(const AppConfig& config)
 	mCurrentState->Terminate();
 
 	// terminate singletons
+	TextureCache::StaticTerminate();
 	SimpleDraw::StaticTerminate();
 	DebugUI::StaticTerminate();
 	InputSystem::StaticTerminate();

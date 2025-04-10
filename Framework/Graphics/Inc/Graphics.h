@@ -12,7 +12,10 @@
 #include "MeshBuilder.h"
 #include "MeshTypes.h"
 #include "PixelShader.h"
-
+#include "RenderObject.h"
+#include "Transform.h"
+#include "StandardEffect.h"
+#include "TextureCashe.h"
 #include "Sampler.h"
 #include "SimpleDraw.h"
 #include "Texture.h"
