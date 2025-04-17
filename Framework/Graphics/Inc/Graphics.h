@@ -22,3 +22,5 @@
 #include "VertexShader.h"
 #include "VertexTypes.h"
 #include "RenderTarget.h"
+#include "DirectionalLight.h"
+#include "Material.h"

@@ -2,6 +2,8 @@
 #include "MeshBuffer.h"
 #include "Transform.h"
 #include "TextureCashe.h"
+#include "Material.h"
+
 namespace SumEngine::Graphics
 {
 	class RenderObject
@@ -11,6 +13,8 @@ namespace SumEngine::Graphics
 
 			MeshBuffer meshBuffer;
 			Transform transform;
+
+			Material material;
 			TextureId diffuseId;
 	};
 }

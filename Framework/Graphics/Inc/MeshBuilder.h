@@ -28,5 +28,6 @@ namespace SumEngine::Graphics
 		// Sphere
 		static MeshPC CreateSpherePC(int slices, int rings, float radius);
 		static MeshPX CreateSpherePX(int slices, int rings, float radius);
+		static Mesh CreateSphere(int slices, int rings, float radius);
 	};
 }

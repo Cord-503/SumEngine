@@ -12,19 +12,26 @@ using namespace SumEngine::Graphics;
 
 void StandardEffect::Initialize(const std::filesystem::path& path)
 {
-	mConstantBuffer.Initialize(sizeof(Math::Matrix4));
+	mTransformBuffer.Initialize();
+	
+	mLightBuffer.Initialize();
 
-	mVertexShader.Initialize<VertexPX>(path);
+	mMaterialBuffer.Initialize();
+
+	mVertexShader.Initialize<Vertex>(path);
 	mPixelShader.Initialize(path);
 	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Wrap);
 }
 
 void StandardEffect::Terminate()
 {
-	mConstantBuffer.Terminate();
+
 	mVertexShader.Terminate();
 	mPixelShader.Terminate();
 	mSampler.Terminate();
+	mTransformBuffer.Terminate();
+	mLightBuffer.Terminate();
+	mMaterialBuffer.Terminate();
 }
 
 void StandardEffect::Begin()
@@ -32,8 +39,12 @@ void StandardEffect::Begin()
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 
+	mTransformBuffer.BindVS(0);
+	mLightBuffer.BindPS(1);
+	mLightBuffer.BindVS(1);
+	mMaterialBuffer.BindPS(2);
+
 	mSampler.BindPS(0);
-	mConstantBuffer.BindVS(0);
 }
 
 void StandardEffect::End()
@@ -47,12 +58,18 @@ void StandardEffect::Render(const RenderObject& renderObject)
 	const Math::Matrix4 matView = mCamera->GetViewMatrix();
 	const Math::Matrix4 matProj = mCamera->GetProjectionMatrix();
 	const Math::Matrix4 matFinal = matMatrix * matView * matProj;
-	const Math::Matrix4 wvp = Transpose(matFinal);
-	mConstantBuffer.Update(&wvp);
+
+	TransformData data;
+	data.wvp = Math::Transpose(matFinal);
+	data.world = Math::Transpose(matMatrix);
+	data.viewPosition = mCamera->GetPosition();
+	mTransformBuffer.Update(data);
+	mLightBuffer.Update(*mDirectionalLight);
+
+	mMaterialBuffer.Update(renderObject.material);
 
 	TextureCache* tc = TextureCache::Get();
 	tc->BindPS(renderObject.diffuseId, 0);
-
 
 	renderObject.meshBuffer.Render();
 	
@@ -62,6 +79,11 @@ void StandardEffect::SetCamera(const Camera& camera)
 {
 	mCamera = &camera;
 
+}
+
+void StandardEffect::SetDirectionalLight(const DirectionalLight& directionalLight)
+{
+	mDirectionalLight = &directionalLight;
 }
 
 void StandardEffect::DebugUI()
