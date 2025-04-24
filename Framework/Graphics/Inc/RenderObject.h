@@ -15,6 +15,11 @@ namespace SumEngine::Graphics
 			Transform transform;
 
 			Material material;
+
 			TextureId diffuseId;
+			TextureId normalId;
+			TextureId specularId;
+			TextureId bumpId;
+
 	};
 }

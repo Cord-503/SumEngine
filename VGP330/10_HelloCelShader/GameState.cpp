@@ -32,7 +32,7 @@ void GameState::Initialize()
 	//mRenderObject2.meshBuffer.Initialize<Mesh>(mesh);
 	//mRenderObject2.diffuseId = tc->LoadTexture("skysphere/sky.jpg");
 
-	std::filesystem::path shaderFile = L"../../Assets/Shaders/Standard.fx";
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/CelShader.fx";
 	mStandardEffect.Initialize(shaderFile);
 	mStandardEffect.SetCamera(mCamera);
 	mStandardEffect.SetDirectionalLight(mDirectionalLight);
@@ -114,10 +114,10 @@ void GameState::DebugUI()
 	}
 	if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		ImGui::ColorEdit4("Emissive##Material", &mRenderObject.material.emissive.r);
 		ImGui::ColorEdit4("Ambient##Material", &mRenderObject.material.ambient.r);
 		ImGui::ColorEdit4("Diffuse##Material", &mRenderObject.material.diffuse.r);
 		ImGui::ColorEdit4("Specular##Material", &mRenderObject.material.specular.r);
-		ImGui::ColorEdit4("Emissive##Material", &mRenderObject.material.emissive.r);
 		ImGui::DragFloat("SpecPower##Material", &mRenderObject.material.shininess, 0.01f, 0.0f, 100.0f);
 	}
 	mStandardEffect.DebugUI();

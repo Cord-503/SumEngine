@@ -40,6 +40,17 @@ namespace SumEngine::Graphics
 
 			};
 
+			struct SettingsData
+			{
+				int useDiffuseMap = 1;
+				int useNormalMap = 1;
+				int useSpecMap = 1;
+				int useBumpMap = 1;
+				float bumpWeight = 0.1f;
+				float padding[3] = { 0.0f, 0.0f, 0.0f }; // padding to make it 16 bytes
+
+			};
+
 			using TransformBuffer = TypedConstantBuffer<TransformData>;
 			TransformBuffer mTransformBuffer;
 
@@ -49,12 +60,16 @@ namespace SumEngine::Graphics
 			using MaterialBuffer = TypedConstantBuffer<Material>;
 			MaterialBuffer mMaterialBuffer;
 
+			using SettingsBuffer = TypedConstantBuffer<SettingsData>;
+			SettingsBuffer mSettingsBuffer;
+
 			VertexShader mVertexShader;
 			PixelShader mPixelShader;
 			Sampler mSampler;
 
 			const Camera* mCamera = nullptr;
 			const DirectionalLight* mDirectionalLight = nullptr;
+			SettingsData mSettingsData;
 
 	};
 

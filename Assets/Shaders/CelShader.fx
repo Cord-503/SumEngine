@@ -1,4 +1,5 @@
-// Description: standard effect applies to lighting
+// Description: base fx file for standard object rendering
+// the local space vertices into NDC space
 
 cbuffer TransformBuffer : register(b0)
 {
@@ -68,13 +69,6 @@ VS_OUTPUT VS(VS_INPUT input)
 {
     float3 localPosition = input.position;
     
-    if (useBumpMap)
-    {
-        float4 bumpMapColor = bumpMap.SampleLevel(textureSampler, input.texCoord, 0.0f);
-        float bumpColor = (2.0f * bumpMapColor.r) - 1.0f;
-        localPosition += (input.normal * bumpColor * bumpWeight);
-    }
-    
     
     VS_OUTPUT output;
     output.position = mul(float4(localPosition, 1.0f), wvp);
@@ -93,36 +87,31 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float3 light = normalize(input.dirToLight);
     float3 view = normalize(input.dirToView);
     
-    if(useNormalMap)
-    {
-        float3 t = normalize(input.worldTangent);
-        float3 b = normalize(cross(n, t));
-        float3x3 tbnw = float3x3(t, b, n);
-        float4 normalMapColor = normalMap.Sample(textureSampler, input.texCoord);
-        float3 unpackedNormalMap = normalize(float3((normalMapColor.xy * 2.0f) - 1.0f, normalMapColor.z));
-        n = normalize(mul(unpackedNormalMap, tbnw));
-    }
-
-    
     // emissive
-    float4 emissive = materialEmissive;
+    float edgeThickness = 0.85f;
+    float edgeThreshold = 0.01f;
+    float e = 1.0f - saturate(dot(view, n));
+    e = smoothstep(edgeThickness - 0.01f, edgeThickness + 0.01f, e);
+    float4 emissive =e* materialEmissive;
     
     // ambient
     float4 ambient = lightAmbient * materialAmbient;
     
     // diffuse
     float4 d = saturate(dot(n, light));
+    d = smoothstep(0.005f, 0.1f, d);
     float4 diffuse = d * lightDiffuse * materialDiffuse;
     
     // specular
     float3 r = reflect(-light, n);
     float base = saturate(dot(r, view));
     float s = pow(base, materialShininess);
+    s = smoothstep(0.005f, 0.1f, s);
     float4 specular = s * lightSpecular * materialSpecular;
     
     // texture color
-    float4 diffuseColor = (useDiffuseMap) ? diffuseMap.Sample(textureSampler, input.texCoord): 1.0f;
-    float4 specMapColor = (useSpecMap) ? specularMap.Sample(textureSampler, input.texCoord).r :1.0f;
+    float4 diffuseColor = 1.0f;
+    float4 specMapColor = 1.0f;
     
     // final color
     float4 finalColor = (emissive + ambient + diffuse) * diffuseColor + (specular * specMapColor);
