@@ -53,6 +53,12 @@ Color ToColor(const aiColor3D& c)
 	};
 }
 
+std::string FindTexture(const aiScene* scene, const aiMaterial* aiMaterial, aiTextureType textureType, const Arguments& args, const std::string& suffix, uint32_t materialIndex)
+{
+	// next week
+	return "";
+}
+
 std::optional<Arguments> ParserArgs(int argc, char* argv[])
 {
 	if (argc < 3)
@@ -193,11 +199,15 @@ int main(int argc, char* argv[])
 			materialData.material.specular = ToColor(specular);
 			materialData.material.shininess = static_cast<float>(specularPower);
 
-
+			materialData.diffuseMapName = FindTexture(scene, aiMaterial, aiTextureType_DIFFUSE, args, "_diff", materialIndex);
+			materialData.normalMapName = FindTexture(scene, aiMaterial, aiTextureType_NORMALS, args, "_norm", materialIndex);
+			materialData.specMapName = FindTexture(scene, aiMaterial, aiTextureType_SPECULAR, args, "_spec", materialIndex);
+			materialData.bumpMapName = FindTexture(scene, aiMaterial, aiTextureType_DISPLACEMENT, args, "_bump", materialIndex);
 		}
 
 	}
 
+	// next week
 
 
 
