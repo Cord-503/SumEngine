@@ -22,9 +22,16 @@ void GameState::Initialize()
 
 	Mesh mesh = MeshBuilder::CreateSphere(60, 60, 1.0f);
 	mRenderObject.meshBuffer.Initialize<Mesh>(mesh);
-	mRenderObject.diffuseId = tc->LoadTexture("planets/earth/earth.jpg");
-	mRenderObject.normalId = tc->LoadTexture("planets/earth/earth_normal.jpg");
-	mRenderObject.specularId = tc->LoadTexture("planets/earth/earth_spec.jpg");
+	//mRenderObject.diffuseId = tc->LoadTexture("planets/earth/earth.jpg");
+	//mRenderObject.normalId = tc->LoadTexture("planets/earth/earth_normal.jpg");
+	//mRenderObject.specularId = tc->LoadTexture("planets/earth/earth_spec.jpg");
+
+	mRenderObject.meshBuffer.Initialize<Mesh>(mesh);
+	mRenderObject.diffuseId = tc->LoadTexture("planets/earth2/2k_earth_daymap.jpg");
+	mRenderObject.normalId = tc->LoadTexture("planets/earth2/2k_earth_normal_map.tif");
+	mRenderObject.specularId = tc->LoadTexture("planets/earth2/2k_earth_specular_map.tif");
+
+
 	mRenderObject.bumpId = tc->LoadTexture("planets/earth/earth_bump.jpg");
 
 
@@ -32,7 +39,8 @@ void GameState::Initialize()
 	//mRenderObject2.meshBuffer.Initialize<Mesh>(mesh);
 	//mRenderObject2.diffuseId = tc->LoadTexture("skysphere/sky.jpg");
 
-	std::filesystem::path shaderFile = L"../../Assets/Shaders/CelShader.fx";
+	//std::filesystem::path shaderFile = L"../../Assets/Shaders/CelShader.fx";
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/Standard.fx";
 	mStandardEffect.Initialize(shaderFile);
 	mStandardEffect.SetCamera(mCamera);
 	mStandardEffect.SetDirectionalLight(mDirectionalLight);
