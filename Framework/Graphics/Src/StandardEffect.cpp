@@ -91,6 +91,43 @@ void StandardEffect::Render(const RenderObject& renderObject)
 	
 }
 
+void StandardEffect::Render(const RenderGroup& renderGroup)
+{
+	const Math::Matrix4 matMatrix = renderGroup.transform.GetMatrix4();
+	const Math::Matrix4 matView = mCamera->GetViewMatrix();
+	const Math::Matrix4 matProj = mCamera->GetProjectionMatrix();
+	const Math::Matrix4 matFinal = matMatrix * matView * matProj;
+
+	TransformData data;
+	data.wvp = Math::Transpose(matFinal);
+	data.world = Math::Transpose(matMatrix);
+	data.viewPosition = mCamera->GetPosition();
+	mTransformBuffer.Update(data);
+	mLightBuffer.Update(*mDirectionalLight);
+	
+	TextureCache* tc = TextureCache::Get();
+	SettingsData settingsData;
+
+	for (const RenderObject& renderObject : renderGroup.renderObjects) 
+	{
+		SettingsData settingsData;
+		settingsData.useDiffuseMap = (mSettingsData.useDiffuseMap > 0 && renderObject.diffuseId > 0) ? 1 : 0;
+		settingsData.useNormalMap = (mSettingsData.useNormalMap > 0 && renderObject.normalId > 0) ? 1 : 0;
+		settingsData.useSpecMap = (mSettingsData.useSpecMap > 0 && renderObject.specularId > 0) ? 1 : 0;
+		settingsData.useBumpMap = (mSettingsData.useBumpMap > 0 && renderObject.bumpId > 0) ? 1 : 0;
+		settingsData.bumpWeight = mSettingsData.bumpWeight;
+		mSettingsBuffer.Update(settingsData);
+		mMaterialBuffer.Update(renderObject.material);
+
+		tc->BindPS(renderObject.diffuseId, 0);
+		tc->BindPS(renderObject.normalId, 1);
+		tc->BindPS(renderObject.specularId, 2);
+		tc->BindVS(renderObject.bumpId, 3);
+
+		renderObject.meshBuffer.Render();
+	}
+}
+
 void StandardEffect::SetCamera(const Camera& camera)
 {
 	mCamera = &camera;

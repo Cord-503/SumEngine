@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "TextureCashe.h"
 #include "Material.h"
+#include "ModelCache.h"
 
 namespace SumEngine::Graphics
 {
@@ -11,9 +12,8 @@ namespace SumEngine::Graphics
 		public:
 			void Terminate();
 
-			MeshBuffer meshBuffer;
 			Transform transform;
-
+			MeshBuffer meshBuffer;
 			Material material;
 
 			TextureId diffuseId;
@@ -22,4 +22,17 @@ namespace SumEngine::Graphics
 			TextureId bumpId;
 
 	};
+
+	class RenderGroup
+	{
+		public:
+			void Initialize(const std::filesystem::path& modelFilePath);
+			void Initialize(const Model& model);
+			void Terminate();
+
+			ModelId modelId;
+			Transform transform;
+			std ::vector<RenderObject> renderObjects;
+	};
+
 }

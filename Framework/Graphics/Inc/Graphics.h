@@ -25,3 +25,5 @@
 #include "DirectionalLight.h"
 #include "Material.h"
 #include "Model.h"
+#include "ModelIO.h"
+#include "ModelCache.h"

@@ -11,6 +11,7 @@ namespace SumEngine::Graphics
 {
 	class Camera;
 	class RenderObject;
+	class RenderGroup;
 
 
 	class StandardEffect final
@@ -23,6 +24,7 @@ namespace SumEngine::Graphics
 			void End();
 
 			void Render(const RenderObject& renderObject);
+			void Render(const RenderGroup& renderGroup);
 
 			void SetCamera(const Camera& camera);
 			void SetDirectionalLight(const DirectionalLight& light);	

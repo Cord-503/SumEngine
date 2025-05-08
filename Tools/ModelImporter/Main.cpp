@@ -53,10 +53,101 @@ Color ToColor(const aiColor3D& c)
 	};
 }
 
+void ExportEmbeddedTexture(const aiTexture* texture, const Arguments& args, const std::filesystem::path& fileName)
+{
+	printf("Extracting embedded texture %s\n", fileName.u8string().c_str());
+
+	std::string fullFileName = args.outputFileName.u8string();
+
+	fullFileName = fullFileName.substr(0, fullFileName.rfind('/') + 1);
+	fullFileName += fileName.filename().u8string();
+
+	FILE* file = nullptr;
+	auto err = fopen_s(&file, fullFileName.c_str(), "wb");
+	if (err != 0 || file == nullptr)
+	{
+		printf("Error: failed to open file %s for saving\n", fullFileName.c_str());
+		return;
+	}
+
+	size_t weritten = fwrite(texture->pcData, 1, texture->mWidth, file);
+	ASSERT(weritten == texture->mWidth, "Error: Failed to extract embedded texture");
+	fclose(file);
+}
+
+
 std::string FindTexture(const aiScene* scene, const aiMaterial* aiMaterial, aiTextureType textureType, const Arguments& args, const std::string& suffix, uint32_t materialIndex)
 {
-	// next week
-	return "";
+	const uint32_t textureCount = aiMaterial->GetTextureCount(textureType);
+	if (textureCount == 0)
+	{
+		return "";
+	}
+
+	std::filesystem::path textureName;
+	aiString texturePath;
+	if (aiMaterial->GetTexture(textureType, 0, &texturePath) == aiReturn_SUCCESS)
+	{
+		if (texturePath.C_Str()[0] == '*')
+		{
+			std::string fileName = args.inputFileName.u8string();
+
+			fileName.erase(fileName.length() - 4);
+
+			fileName += suffix;
+
+			fileName += texturePath.C_Str()[1];
+
+			ASSERT(scene->HasTextures(), "Error: No embedded texture found");
+
+			int textureIndex = atoi(texturePath.C_Str() + 1);
+			ASSERT(textureIndex < scene->mNumTextures, "Error: Invalid texture index");
+
+			const aiTexture* embeddedTexture = scene->mTextures[textureIndex];
+			ASSERT(embeddedTexture->mHeight == 0, "Error: Uncompressed texture format");
+
+			if (embeddedTexture->CheckFormat("jpg"))
+			{
+				fileName += ".jpg";
+			}
+			else if (embeddedTexture->CheckFormat("png"))
+			{
+				fileName += ".png";
+			}
+			else
+			{
+				ASSERT(false, "Error: unrecognized texture format");
+			}
+
+
+			ExportEmbeddedTexture(embeddedTexture, args, fileName);
+			printf("Adding texture %s\n", fileName.c_str());
+			textureName = fileName;
+		}
+		else if (auto embeddedTexture = scene->GetEmbeddedTexture(texturePath.C_Str()); embeddedTexture)
+		{
+			std::filesystem::path embeddedFilePath = texturePath.C_Str();
+			std::string fileName = args.inputFileName.u8string();
+			fileName.erase(fileName.length() - 4);
+			fileName += suffix;
+			fileName += "_" + std::to_string(materialIndex);
+			fileName += embeddedFilePath.extension().u8string();
+
+			ExportEmbeddedTexture(embeddedTexture, args, fileName);
+			printf("Adding texture %s\n", fileName.c_str());
+			textureName = fileName;
+		}
+		else
+		{
+			std::filesystem::path filePath = texturePath.C_Str();
+			std::string fileName = filePath.filename().u8string();
+
+			printf("Adding texture %s\n", fileName.c_str());
+			textureName = fileName;
+		}
+	}
+
+	return textureName.filename().u8string();
 }
 
 std::optional<Arguments> ParserArgs(int argc, char* argv[])
@@ -70,8 +161,6 @@ std::optional<Arguments> ParserArgs(int argc, char* argv[])
 	args.inputFileName = argv[argc - 2];
 	args.outputFileName = argv[argc - 1];
 
-
-
 	for (int i = 1; i + 2 < argc; ++i)
 	{
 		if (strcmp(argv[i], "-scale") == 0)
@@ -82,7 +171,6 @@ std::optional<Arguments> ParserArgs(int argc, char* argv[])
 	}
 
 	return args;
-
 }
 
 
@@ -207,8 +295,11 @@ int main(int argc, char* argv[])
 
 	}
 
-	// next week
+	printf("Saving Model...\n");
+	ModelIO::SaveModel(args.outputFileName, model);
 
+	printf("Saving Material...\n");
+	ModelIO::SaveMaterial(args.outputFileName, model);
 
 
 	return 0;
