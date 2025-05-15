@@ -1,1 +1,2 @@
 -scale 0.01 ../../Assets/Models/Ortiz/Ortiz.fbx ../../Assets/Models/Ortiz/Ortiz.model
+-scale 0.01 ../../Assets/Models/Amy/Amy.fbx ../../Assets/Models/Amy/Amy.model

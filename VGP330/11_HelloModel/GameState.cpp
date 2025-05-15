@@ -20,7 +20,8 @@ void GameState::Initialize()
 
 	TextureCache* tc = TextureCache::Get();
 	
-	mCharater.Initialize("../../Assets/Models/Ortiz/Ortiz.model");
+	//mCharater.Initialize("../../Assets/Models/Ortiz/Ortiz.model");
+	mCharater.Initialize("../../Assets/Models/Amy/Amy.model");
 
 	std::filesystem::path shaderFile = L"../../Assets/Shaders/Standard.fx";
 	mStandardEffect.Initialize(shaderFile);
