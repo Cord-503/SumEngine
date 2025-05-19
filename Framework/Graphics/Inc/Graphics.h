@@ -27,3 +27,4 @@
 #include "Model.h"
 #include "ModelIO.h"
 #include "ModelCache.h"
+#include "PostProcessingEffect.h"
