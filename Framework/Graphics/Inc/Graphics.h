@@ -29,3 +29,5 @@
 #include "ModelCache.h"
 #include "PostProcessingEffect.h"
 #include "ShadowEffect.h"
+#include "Terrain.h"
+#include "TerrainEffect.h"
