@@ -4,7 +4,7 @@
 
 using namespace SumEngine;
 
-int WINAPI Winmain(HINSTANCE instance, HINSTANCE, LPSTR, int)
+int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int)
 {
 	AppConfig config;
 	config.appname = L"Hello Terrain";

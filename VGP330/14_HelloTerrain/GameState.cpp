@@ -8,7 +8,7 @@ using namespace SumEngine::Input;
 
 void GameState::Initialize()
 {
-	mCamera.SetPosition({ 0.0f, 2.0f, -5.0f });
+	mCamera.SetPosition({ 10.0f, 2.0f, 40.0f });
 	mCamera.SetLookAt({ 0.0f, 1.0f, 0.0f });
 
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
@@ -16,9 +16,9 @@ void GameState::Initialize()
 	mDirectionalLight.diffuse = { 0.7f, 0.7f, 0.7f, 1.0f };
 	mDirectionalLight.specular = { 0.9f, 0.9f, 0.9f, 1.0f };
 
-	mCharacter.Initialize(L"../../Assets/Models/Ortiz/Ortiz.model");
+	//mCharacter.Initialize(L"../../Assets/Models/Ortiz/Ortiz.model");
 
-	mTerrain.Initialize(L"../../Assets/Images/terrain/heightmap_512x512.raw", 20.0f, 10.0f);
+	mTerrain.Initialize(L"../../Assets/Images/terrain/heightmap_512x512.raw", 40.0f, 20.f);
 
 	mGround.meshBuffer.Initialize(mTerrain.GetMesh());
 	mGround.diffuseId = TextureCache::Get()->LoadTexture("terrain/dirt_seamless.jpg");
@@ -29,8 +29,7 @@ void GameState::Initialize()
 	mStandardEffect.Initialize(shaderFile);
 	mStandardEffect.SetCamera(mCamera);
 	mStandardEffect.SetDirectionalLight(mDirectionalLight);
-	mStandardEffect.SetShadowMap(mShadowEffect.GetDepthMap());
-	mStandardEffect.SetLightCamera(mShadowEffect.GetLightCamera());
+
 
 	mTerrainEffect.Initialize();
 	mTerrainEffect.SetCamera(mCamera);
@@ -41,7 +40,7 @@ void GameState::Initialize()
 void GameState::Terminate()
 {
 	mGround.Terminate();
-	mCharacter.Terminate();
+	//mCharacter.Terminate();
 	mTerrainEffect.Terminate();
 	mStandardEffect.Terminate();
 }
@@ -97,9 +96,9 @@ bool checkBox = true;
 
 void GameState::Render()
 {
-	mStandardEffect.Begin();
-		mStandardEffect.Render(mCharacter);
-	mStandardEffect.End();
+	//mStandardEffect.Begin();
+	//	mStandardEffect.Render(mCharacter);
+	//mStandardEffect.End();
 
 	mTerrainEffect.Begin();
 		mTerrainEffect.Render(mGround);

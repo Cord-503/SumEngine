@@ -94,6 +94,7 @@ void TerrainEffect::DebugUI()
 			mSettingsData.useBlend = useBlend ? 1 : 0;
 		}
 		ImGui::DragFloat("BlendHeight", &mSettingsData.blendHeight, 0.1f, 0.0f, 20.0f);
+		ImGui::DragFloat("BlendHeight", &mSettingsData.blendHeight, 0.1f, 0.0f, 20.0f);
 		ImGui::DragFloat("BlendThickness", &mSettingsData.blendThickness, 0.1f, 0.0f, 20.0f);
 	}
 }
