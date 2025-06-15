@@ -6,6 +6,7 @@ namespace SumEngine::Graphics
 	{
 	public:
 		static void ClearState();
+		static BlendState* Get();
 
 		enum class Mode
 		{
@@ -17,16 +18,15 @@ namespace SumEngine::Graphics
 
 		BlendState() = default;
 		~BlendState();
-
 		BlendState(const BlendState&) = delete;
 		BlendState& operator=(const BlendState&) = delete;
 
 		void Initialize(Mode mode);
 		void Terminate();
-
 		void Set();
 
 	private:
 		ID3D11BlendState* mBlendState = nullptr;
+		static std::unique_ptr<BlendState> sInstance;
 	};
 }

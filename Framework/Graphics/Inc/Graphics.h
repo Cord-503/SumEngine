@@ -31,3 +31,5 @@
 #include "ShadowEffect.h"
 #include "Terrain.h"
 #include "TerrainEffect.h"
+#include "StylizedEffect.h"
+#include "RasterizerState.h"

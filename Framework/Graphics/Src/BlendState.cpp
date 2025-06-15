@@ -1,10 +1,12 @@
 #include "Precompiled.h"
 #include "BlendState.h"
-
 #include "GraphicsSystem.h"
 
 using namespace SumEngine;
 using namespace SumEngine::Graphics;
+
+// 静态成员定义
+std::unique_ptr<BlendState> BlendState::sInstance;
 
 namespace
 {
@@ -12,12 +14,12 @@ namespace
 	{
 		switch (mode)
 		{
-			case BlendState::Mode::Additive:			return D3D11_BLEND_SRC_ALPHA;
-			case BlendState::Mode::AlphaBlend:			return D3D11_BLEND_SRC_ALPHA;
-			case BlendState::Mode::AlphaPremultiplied:	return D3D11_BLEND_ONE;
-			case BlendState::Mode::Opaque:				return D3D11_BLEND_ONE;
-			default:
-				break;
+		case BlendState::Mode::Additive:			return D3D11_BLEND_SRC_ALPHA;
+		case BlendState::Mode::AlphaBlend:			return D3D11_BLEND_SRC_ALPHA;
+		case BlendState::Mode::AlphaPremultiplied:	return D3D11_BLEND_ONE;
+		case BlendState::Mode::Opaque:				return D3D11_BLEND_ONE;
+		default:
+			break;
 		}
 		return D3D11_BLEND_ZERO;
 	}
@@ -26,15 +28,24 @@ namespace
 	{
 		switch (mode)
 		{
-			case BlendState::Mode::Additive:			return D3D11_BLEND_ONE;
-			case BlendState::Mode::AlphaBlend:			return D3D11_BLEND_INV_SRC_ALPHA;
-			case BlendState::Mode::AlphaPremultiplied:	return D3D11_BLEND_INV_SRC_ALPHA;
-			case BlendState::Mode::Opaque:				return D3D11_BLEND_ZERO;
-			default:
-				break;
+		case BlendState::Mode::Additive:			return D3D11_BLEND_ONE;
+		case BlendState::Mode::AlphaBlend:			return D3D11_BLEND_INV_SRC_ALPHA;
+		case BlendState::Mode::AlphaPremultiplied:	return D3D11_BLEND_INV_SRC_ALPHA;
+		case BlendState::Mode::Opaque:				return D3D11_BLEND_ZERO;
+		default:
+			break;
 		}
 		return D3D11_BLEND_ZERO;
 	}
+}
+
+BlendState* BlendState::Get()
+{
+	if (!sInstance)
+	{
+		sInstance = std::make_unique<BlendState>();
+	}
+	return sInstance.get();
 }
 
 void BlendState::ClearState()
@@ -52,7 +63,6 @@ void BlendState::Initialize(Mode mode)
 {
 	D3D11_BLEND srcBlend = GetSrcBlend(mode);
 	D3D11_BLEND destBlend = GetDestBlend(mode);
-
 	D3D11_BLEND_DESC desc{};
 	desc.RenderTarget[0].BlendEnable = (srcBlend != D3D11_BLEND_ONE) || (destBlend != D3D11_BLEND_ZERO);
 	desc.RenderTarget[0].SrcBlend = desc.RenderTarget[0].SrcBlendAlpha = srcBlend;
