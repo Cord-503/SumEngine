@@ -33,6 +33,7 @@ void OutlineEffect::Begin()
     mPixelShader.Bind();
 
     mTransformBuffer.BindVS(0);
+    mTransformBuffer.BindPS(0);
     mSettingsBuffer.BindVS(1);
     mSettingsBuffer.BindPS(1);
 
@@ -64,6 +65,29 @@ void OutlineEffect::Render(const RenderObject& renderObject)
     mSettingsBuffer.Update(settings);
 
     renderObject.meshBuffer.Render();
+}
+
+void OutlineEffect::Render(const RenderGroup& renderGroup)
+{
+    ASSERT(mCamera != nullptr, "Outline Effect: must have a camera");
+
+    const Math::Matrix4 matWorld = renderGroup.transform.GetMatrix4();
+    const Math::Matrix4 matView = mCamera->GetViewMatrix();
+    const Math::Matrix4 matProj = mCamera->GetProjectionMatrix();
+    const Math::Matrix4 matFinal = matWorld * matView * matProj;
+
+    TransformData transformData;
+    transformData.wvp = Transpose(matFinal);
+    transformData.world = Transpose(matWorld);
+    transformData.viewPosition = mCamera->GetPosition();
+    mTransformBuffer.Update(transformData);
+
+    SettingsData settings = mSettingsData;
+    mSettingsBuffer.Update(settings);
+    for (const auto& renderObject : renderGroup.renderObjects)
+	{
+		renderObject.meshBuffer.Render();
+	}
 }
 
 void OutlineEffect::SetCamera(const Camera& camera)

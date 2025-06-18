@@ -24,10 +24,13 @@ protected:
     SumEngine::Graphics::OutlineEffect mOutlineEffect;
 
     SumEngine::Graphics::RenderObject mGround;
-    // assignment
+
     SumEngine::Graphics::RenderObject mSphere;
     SumEngine::Graphics::RenderObject mSphereOutline;
 
     SumEngine::Graphics::RenderObject mCube;
     SumEngine::Graphics::RenderObject mCubeOutline;
+
+    SumEngine::Graphics::RenderGroup mCharater; 
+    SumEngine::Graphics::RenderGroup mCharaterOutLine; 
 };

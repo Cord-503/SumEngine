@@ -37,6 +37,14 @@ void GameState::Initialize()
     mGround.meshBuffer.Initialize(ground);
     mGround.diffuseId = TextureCache::Get()->LoadTexture("misc/concrete.jpg");
 
+    // Character setup
+    mCharater.Initialize("../../Assets/Models/Amy/Amy.model");
+    mCharater.transform.position = { -2.5f, 0.0f, 0.0f };
+
+    mCharaterOutLine.Initialize("../../Assets/Models/Amy/Amy.model");
+    mCharaterOutLine.transform.position = { -2.5f, 0.0f, 0.0f };
+    mCharaterOutLine.transform.scale *= 1.01f;
+
     // Sphere setup
     Mesh sphere = MeshBuilder::CreateSphere(500, 20, 1.5f);
     mSphere.meshBuffer.Initialize(sphere);
@@ -60,8 +68,6 @@ void GameState::Initialize()
     mCubeOutline.transform.position.x = 2.0f;
     mCubeOutline.transform.position.y = 0.5f;
     mCubeOutline.transform.scale = { 1.05f, 1.05f, 1.05f };
-
-
 }
 
 void GameState::Terminate()
@@ -73,6 +79,9 @@ void GameState::Terminate()
 
     mSphere.Terminate();
     mSphereOutline.Terminate();
+
+    mCharater.Terminate();
+	mCharaterOutLine.Terminate();
 
     mStandardEffect.Terminate();
     mShadowEffect.Terminate();
@@ -130,12 +139,14 @@ void GameState::Render()
     mShadowEffect.Begin();
         mShadowEffect.Render(mSphere);
         mShadowEffect.Render(mCube);
+        mShadowEffect.Render(mCharater);
     mShadowEffect.End();
 
     // Outline pass - render slightly larger version first
     mOutlineEffect.Begin();
         mOutlineEffect.Render(mSphereOutline);
         mOutlineEffect.Render(mCubeOutline);
+        mOutlineEffect.Render(mCharaterOutLine);
     mOutlineEffect.End();
 
     // Standard pass - render normal version
@@ -143,6 +154,7 @@ void GameState::Render()
         mStandardEffect.Render(mSphere);
         mStandardEffect.Render(mCube);
         mStandardEffect.Render(mGround);
+        mStandardEffect.Render(mCharater);
     mStandardEffect.End();
 }
 
@@ -167,7 +179,7 @@ void GameState::DebugUI()
         static float outlineWidth = 0.02f;
         static float outlineColor[3] = { 0.0f, 0.0f, 0.0f };
 
-        if (ImGui::DragFloat("Outline Width", &outlineWidth, 0.001f, 0.0f, 0.1f))
+        if (ImGui::DragFloat("Outline Width", &outlineWidth, 0.001f, 0.0f, 1.0f))
         {
             mOutlineEffect.SetOutlineWidth(outlineWidth);
         }

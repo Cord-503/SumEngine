@@ -20,6 +20,7 @@ namespace SumEngine::Graphics
         void End();
 
         void Render(const RenderObject& renderObject);
+        void Render(const RenderGroup& renderGroup);
 
         void SetCamera(const Camera& camera);
 

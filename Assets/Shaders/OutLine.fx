@@ -10,7 +10,6 @@ cbuffer SettingsBuffer : register(b1)
 {
     float outlineWidth;
     float3 outlineColor;
-    float edgeThreshold;
 }
 
 struct VS_INPUT
@@ -24,7 +23,6 @@ struct VS_OUTPUT
     float4 position : SV_Position;
     float3 worldNormal : NORMAL;
     float3 worldPosition : TEXCOORD0;
-    float edgeFactor : TEXCOORD1;
 };
 
 VS_OUTPUT VS(VS_INPUT input)
@@ -35,17 +33,16 @@ VS_OUTPUT VS(VS_INPUT input)
     output.worldNormal = normalize(mul(input.normal, (float3x3) world));
     output.worldPosition = mul(float4(input.position, 1.0f), world).xyz;
     
-    float3 viewDir = normalize(viewPosition - output.worldPosition);
-    output.edgeFactor = 1.0 - abs(dot(output.worldNormal, viewDir));
-    
     return output;
 }
 
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-    float outline = smoothstep(0.1, 0.7, input.edgeFactor) * outlineWidth;
+    float3 n = normalize(input.worldNormal);
+    float3 viewDir = normalize(viewPosition - input.worldPosition);
+    float edgeFactor = dot(n, viewDir);
     
-    if (outline > 0.001)
+    if (edgeFactor < outlineWidth)
     {
         return float4(outlineColor, 1.0);
     }
