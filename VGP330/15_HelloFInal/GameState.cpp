@@ -47,7 +47,7 @@ void GameState::Initialize()
     mSphereOutline.meshBuffer.Initialize(sphere);
     mSphereOutline.transform.position.x = 0.0f;
     mSphereOutline.transform.position.y = 1.5f;
-    mSphereOutline.transform.scale = { 1.0f, 1.0f, 1.0f };
+    mSphereOutline.transform.scale = { 1.05f, 1.05f, 1.05f };
 
     // Cube setup
     Mesh cube = MeshBuilder::CreateCube(1.0f);
