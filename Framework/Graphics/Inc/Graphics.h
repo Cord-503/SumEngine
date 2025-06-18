@@ -31,3 +31,4 @@
 #include "ShadowEffect.h"
 #include "Terrain.h"
 #include "TerrainEffect.h"
+#include "OutLineEffect.h"
