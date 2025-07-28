@@ -32,6 +32,7 @@ namespace SumEngine::Graphics
 
 			ModelId modelId;
 			Transform transform;
+			const Skeleton* Skeleton = nullptr;
 			std ::vector<RenderObject> renderObjects;
 	};
 

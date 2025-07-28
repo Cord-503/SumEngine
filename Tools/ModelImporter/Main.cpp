@@ -9,6 +9,8 @@ using namespace SumEngine;
 using namespace SumEngine::Graphics;
 using namespace SumEngine::Math;
 
+using BoneIndexLookup = std::map<std::string, uint32_t>;
+
 struct Arguments
 {
 	std::filesystem::path inputFileName;
@@ -50,6 +52,16 @@ Color ToColor(const aiColor3D& c)
 		static_cast<float>(c.g),
 		static_cast<float>(c.b),
 		1.0f
+	};
+}
+
+Matrix4 ToMatrix4(const aiMatrix4x4& m)
+{
+	return {
+		static_cast<float>(m.a1), static_cast<float>(m.b1), static_cast<float>(m.c1), static_cast<float>(m.d1),
+		static_cast<float>(m.a2), static_cast<float>(m.b2), static_cast<float>(m.c2), static_cast<float>(m.d2),
+		static_cast<float>(m.a3), static_cast<float>(m.b3), static_cast<float>(m.c3), static_cast<float>(m.d3),
+		static_cast<float>(m.a4), static_cast<float>(m.b4), static_cast<float>(m.c4), static_cast<float>(m.d4)
 	};
 }
 
@@ -173,8 +185,65 @@ std::optional<Arguments> ParserArgs(int argc, char* argv[])
 	return args;
 }
 
+Bone* BuildSkeleton(const aiNode& sceneNode, Bone* parent, Skeleton& skeleton, BoneIndexLookup& boneIndexLookup)
+{
+	Bone* bone = nullptr;
+	std::string boneName = sceneNode.mName.C_Str();
+	auto iter = boneIndexLookup.find(boneName);
+	if (iter != boneIndexLookup.end())
+	{
+		bone = skeleton.bones[iter->second].get();
+	}
+	else
+	{
+		bone = skeleton.bones.emplace_back(std::make_unique<Bone>()).get();
+		bone->index = static_cast<int>(skeleton.bones.size()) - 1;
+		if (boneName.empty())
+		{
+			bone->name = "NoName" + std::to_string(bone->index);
+		}
+		else
+		{
+			bone->name = std::move(boneName);
+		}
+		boneIndexLookup.emplace(bone->name, bone->index);
 
+		bone->parent = parent;
+		bone->parentIndex = parent ? parent->index : -1;
+		bone->toParentTransform = ToMatrix4(sceneNode.mTransformation);
+		bone->offsetTransform = Matrix4::Identity;
 
+		if (skeleton.root == nullptr && parent == nullptr)
+		{
+			skeleton.root = bone;
+		}
+
+		bone->children.reserve(sceneNode.mNumChildren);
+		for (uint32_t i = 0; i < sceneNode.mNumChildren; ++i)
+		{
+			Bone* child = BuildSkeleton(*(sceneNode.mChildren[i]), bone, skeleton, boneIndexLookup);
+			bone->children.push_back(child);
+			bone->childrenIndices.push_back(child->index);
+		}
+	}
+
+	return bone;
+}
+
+uint32_t GetBoneIndex(const aiBone* nodeBone, const BoneIndexLookup& boneIndexMap)
+{
+	std::string boneName = nodeBone->mName.C_Str();
+	auto iter = boneIndexMap.find(boneName);
+	ASSERT(iter != boneIndexMap.end(), "ERROR: aiBone was not found in the index map");
+	return iter->second;
+}
+
+void SetBoneOffsetTransform(const aiBone* nodeBone, Skeleton& skeleton, const BoneIndexLookup& boneIndexMap)
+{
+	uint32_t boneIndex = GetBoneIndex(nodeBone, boneIndexMap);
+	Bone* bone = skeleton.bones[boneIndex].get();
+	bone->offsetTransform = ToMatrix4(nodeBone->mOffsetMatrix);
+}
 
 int main(int argc, char* argv[])
 {
@@ -204,8 +273,37 @@ int main(int argc, char* argv[])
 	printf("Importing %s...\n", args.inputFileName.u8string().c_str());
 
 	Model model;
+	BoneIndexLookup boneIndexLookup;
+
 	if (scene->HasMeshes())
 	{
+		printf("Reading skeleton...\n");
+		model.skeleton = std::make_unique<Skeleton>();
+
+		BuildSkeleton(*scene->mRootNode, nullptr, *model.skeleton, boneIndexLookup);
+		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
+		{
+			const auto& aiMesh = scene->mMeshes[meshIndex];
+			if (aiMesh->HasBones())
+			{
+				for (uint32_t boneIndex = 0; boneIndex < aiMesh->mNumBones; ++boneIndex)
+				{
+					const auto& nodeBone = aiMesh->mBones[boneIndex];
+					SetBoneOffsetTransform(nodeBone, *model.skeleton, boneIndexLookup);
+				}
+			}
+		}
+
+		for (auto& bone : model.skeleton->bones)
+		{
+			bone->offsetTransform._41 *= args.scale;
+			bone->offsetTransform._42 *= args.scale;
+			bone->offsetTransform._43 *= args.scale;
+			bone->toParentTransform._41 *= args.scale;
+			bone->toParentTransform._42 *= args.scale;
+			bone->toParentTransform._43 *= args.scale;
+		}
+
 		printf("Reading Mesh Data...\n");
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
 		{
@@ -255,9 +353,6 @@ int main(int argc, char* argv[])
 					mesh.indices.push_back(aiFace.mIndices[i]);
 				}
 			}
-
-
-
 		}
 
 	}
@@ -301,6 +396,8 @@ int main(int argc, char* argv[])
 	printf("Saving Material...\n");
 	ModelIO::SaveMaterial(args.outputFileName, model);
 
+	printf("Saving Skeleton...\n");
+	ModelIO::SaveSkeleton(args.outputFileName, model);
 
 	return 0;
 }

@@ -27,7 +27,7 @@ void RenderGroup::Initialize(const Model& model)
 		}
 		return TextureCache::Get()->LoadTexture(textureName, false);
 	};
-
+	Skeleton = model.skeleton.get();
 	for (const Model::MeshData& meshData : model.meshData)
 	{
 		RenderObject& renderObject = renderObjects.emplace_back();

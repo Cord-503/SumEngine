@@ -87,7 +87,7 @@ void ModelIO::LoadModel(std::filesystem::path filePath, Model& model)
 				&v.uvCoord.x, &v.uvCoord.y);
 		}
 
-		uint32_t indexCount =0;
+		uint32_t indexCount = 0;
 		fscanf_s(file, "IndexCount: %d\n", &indexCount);
 		mesh.indices.resize(indexCount);
 		for (uint32_t i = 2; i < indexCount; i += 3)
@@ -144,14 +144,14 @@ void ModelIO::LoadMaterial(std::filesystem::path filePath, Model& model)
 	}
 
 	auto TryReadTextureName = [&](auto& fileName)
-	{
-		char buffer[MAX_PATH];
-		fscanf_s(file, "%s\n", &buffer, (uint32_t)sizeof(buffer));
-		if (strcmp(buffer, "<none>") != 0)
 		{
-			fileName = filePath.replace_filename(buffer).string();
-		}
-	};
+			char buffer[MAX_PATH];
+			fscanf_s(file, "%s\n", &buffer, (uint32_t)sizeof(buffer));
+			if (strcmp(buffer, "<none>") != 0)
+			{
+				fileName = filePath.replace_filename(buffer).string();
+			}
+		};
 
 	uint32_t materialCount = 0;
 	fscanf_s(file, "MaterialCount: %d\n", &materialCount);
@@ -169,7 +169,123 @@ void ModelIO::LoadMaterial(std::filesystem::path filePath, Model& model)
 		TryReadTextureName(md.normalMapName);
 		TryReadTextureName(md.specMapName);
 		TryReadTextureName(md.bumpMapName);
-		
+
+	}
+	fclose(file);
+}
+
+void ModelIO::SaveSkeleton(std::filesystem::path filePath, const Model& model)
+{
+	if (model.skeleton == nullptr || model.skeleton->bones.empty())
+	{
+		return;
+	}
+
+	filePath.replace_extension("skeleton");
+	FILE* file = nullptr;
+	fopen_s(&file, filePath.u8string().c_str(), "w");
+
+	if (file == nullptr)
+	{
+		return;
+	}
+
+	auto WriteMatrix = [&file](auto& m)
+	{
+		fprintf_s(file, "%f %f %f %f\n", m._11, m._12, m._13, m._14);
+		fprintf_s(file, "%f %f %f %f\n", m._21, m._22, m._23, m._24);
+		fprintf_s(file, "%f %f %f %f\n", m._31, m._32, m._33, m._34);
+		fprintf_s(file, "%f %f %f %f\n", m._41, m._42, m._43, m._44);
+	};
+
+	uint32_t boneCount = model.skeleton->bones.size();
+	fprintf_s(file, "BoneCount: %d\n", boneCount);
+	fprintf_s(file, "RootBone: %d\n", model.skeleton->root->index);
+
+	for (uint32_t i = 0; i < boneCount; ++i)
+	{
+		const Bone* bone = model.skeleton->bones[i].get();
+		fprintf_s(file, "BoneName: %s\n", bone->name.c_str());
+		fprintf_s(file, "BoneImdex: %d\n", bone->index);
+		fprintf_s(file, "BoneParentIndex: %d\n", bone->parentIndex);
+
+		uint32_t childCount = bone->childrenIndices.size();
+		fprintf_s(file, "BoneChildCount: %d\n", childCount);
+		for (uint32_t c = 0; c < childCount; ++c)
+		{
+			fprintf_s(file, "%d\n", bone->childrenIndices[c]);
+		}
+		WriteMatrix(bone->toParentTransform);
+		WriteMatrix(bone->offsetTransform);
+	}
+
+	fclose(file);
+}
+
+void ModelIO::LoadSkeleton(std::filesystem::path filePath, Model& model)
+{
+	filePath.replace_extension("skeleton");
+	FILE* file = nullptr;
+	fopen_s(&file, filePath.u8string().c_str(), "r");
+
+	if (file == nullptr)
+	{
+		return;
+	}
+
+	auto ReadMatrix = [&file](auto& m)
+	{
+		fscanf_s(file, "%f %f %f %f\n", &m._11, &m._12, &m._13, &m._14);
+		fscanf_s(file, "%f %f %f %f\n", &m._21, &m._22, &m._23, &m._24);
+		fscanf_s(file, "%f %f %f %f\n", &m._31, &m._32, &m._33, &m._34);
+		fscanf_s(file, "%f %f %f %f\n", &m._41, &m._42, &m._43, &m._44);
+	};
+
+	uint32_t boneCount = 0;
+	uint32_t rootIndex = 0;
+	fscanf_s(file, "BoneCount: %d\n", &boneCount);
+	fscanf_s(file, "RootBone: %d\n", &rootIndex);
+
+	model.skeleton = std::make_unique<Skeleton>();
+	model.skeleton->bones.resize(boneCount);
+	for (uint32_t i = 0; i < boneCount; ++i)
+	{
+		model.skeleton->bones[i] = std::make_unique<Bone>();
+	}
+	model.skeleton->root = model.skeleton->bones[rootIndex].get();
+
+	for (uint32_t i = 0; i < boneCount; ++i)
+	{
+		Bone* bone = model.skeleton->bones[i].get();
+		char boneName[MAX_PATH]{};
+		fscanf_s(file, "BoneName: %s\n", boneName, (uint32_t)sizeof(boneName));
+		fscanf_s(file, "BoneImdex: %d\n", &bone->index);
+		fscanf_s(file, "BoneParentIndex: %d\n", &bone->parentIndex);
+
+		bone->name = std::move(boneName);
+		if (bone->parentIndex > -1)
+		{
+			bone->parent = model.skeleton->bones[bone->parentIndex].get();
+		}
+
+		uint32_t childCount = 0;
+		fscanf_s(file, "BoneChildCount: %d\n", &childCount);
+		if (childCount > 0)
+		{
+			bone->children.resize(childCount);
+			bone->childrenIndices.resize(childCount);
+
+			for (uint32_t c = 0; c < childCount; ++c)
+			{
+				uint32_t childIndex = 0;
+				fscanf_s(file, "%d\n", &childIndex);
+				bone->childrenIndices[c] = childIndex;
+				bone->children[c] = model.skeleton->bones[childIndex].get();
+			}
+		}
+
+		ReadMatrix(bone->toParentTransform);
+		ReadMatrix(bone->offsetTransform);
 	}
 	fclose(file);
 }
