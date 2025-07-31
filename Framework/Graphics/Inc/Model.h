@@ -3,6 +3,7 @@
 #include "MeshTypes.h"
 #include "Material.h"
 #include "Skeleton.h"
+#include "AnimationClip.h"
 
 namespace SumEngine::Graphics
 {
@@ -27,6 +28,8 @@ namespace SumEngine::Graphics
 		std::vector<MaterialData> materialData;
 
 		std::unique_ptr<Skeleton> skeleton;
+		std::vector<AnimationClip> animationClips;
+
 
 	};
 }
