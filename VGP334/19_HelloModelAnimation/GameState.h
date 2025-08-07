@@ -22,7 +22,10 @@ protected:
 
 	SumEngine::Graphics::RenderGroup mCharater;
 
+	SumEngine::Graphics::Animator mCharacterAnimator;
+
 	SumEngine::Graphics::StandardEffect mStandardEffect;
 
 	bool useSkeleton = false;
+	int mAnimationIndex = -1;
 };

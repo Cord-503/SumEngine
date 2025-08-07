@@ -21,8 +21,10 @@ void GameState::Initialize()
 	TextureCache* tc = TextureCache::Get();
 	
 	//mCharater.Initialize("../../Assets/Models/Ortiz/Ortiz.model");
-	mCharater.Initialize("../../Assets/Models/Amy/Amy.model");
+	mCharater.Initialize("../../Assets/Models/Amy/Amy.model", &mCharacterAnimator);
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Arm_Stretching.model");
+	mCharacterAnimator.Initialize(mCharater.modelId);
+	mCharacterAnimator.PlayAnimation(0, true); // Start with the first animation
 
 	std::filesystem::path shaderFile = L"../../Assets/Shaders/Standard.fx";
 	mStandardEffect.Initialize(shaderFile);
@@ -40,6 +42,7 @@ void GameState::Terminate()
 void GameState::Update(float deltaTime)
 {
 	UpdateCamera(deltaTime);
+	mCharacterAnimator.Update(deltaTime);
 }
 
 void GameState::UpdateCamera(float deltaTime)
@@ -83,13 +86,13 @@ void GameState::Render()
 	if (!useSkeleton)
 	{
 		mStandardEffect.Begin();
-		mStandardEffect.Render(mCharater);
+			mStandardEffect.Render(mCharater);
 		mStandardEffect.End();
 	}
 	else
 	{
 		AnimationUtil::BoneTransforms boneTransforms;
-		AnimationUtil::ComputeBoneTransforms(mCharater.modelId, boneTransforms);
+		AnimationUtil::ComputeBoneTransforms(mCharater.modelId, boneTransforms, &mCharacterAnimator);
 		AnimationUtil::DrawSkeleton(mCharater.modelId, boneTransforms);
 	}
 
@@ -101,6 +104,7 @@ void GameState::Render()
 void GameState::DebugUI()
 {
 	ImGui::Begin("debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
 	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::DragFloat3("Direction##Light", &mDirectionalLight.direction.x, 0.01f))
@@ -112,7 +116,16 @@ void GameState::DebugUI()
 		ImGui::ColorEdit4("Diffuse##Light", &mDirectionalLight.diffuse.r);
 		ImGui::ColorEdit4("Specular##Light", &mDirectionalLight.specular.r);
 	}
+
 	ImGui::Checkbox("Use Skeleton", &useSkeleton);
+
+	int maxAnim = mCharacterAnimator.GetAnimationCount() - 1;
+	if (ImGui::DragInt("AnimIndex", &mAnimationIndex, 1, -1, maxAnim))
+	{
+		mCharacterAnimator.PlayAnimation(mAnimationIndex, true);
+
+	}
+
 	mStandardEffect.DebugUI();
 	ImGui::End();
 
