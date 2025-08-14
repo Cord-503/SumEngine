@@ -23,6 +23,9 @@ void GameState::Initialize()
 	//mCharater.Initialize("../../Assets/Models/Ortiz/Ortiz.model");
 	mCharater.Initialize("../../Assets/Models/Amy/Amy.model", &mCharacterAnimator);
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Arm_Stretching.model");
+	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Run_Look_Back.model");
+	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Breakdance_Freeze_Var3.model");
+	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Amy_Firing_Rifle.model");
 	mCharacterAnimator.Initialize(mCharater.modelId);
 	mCharacterAnimator.PlayAnimation(0, true); // Start with the first animation
 
