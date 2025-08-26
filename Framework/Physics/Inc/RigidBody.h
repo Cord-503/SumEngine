@@ -20,6 +20,8 @@ namespace SumEngine::Physics
 		const Math::Vector3 GetVelocity() const;
 
 		bool IsDynamic() const;
+		void Activate();
+		void Deactivate();
 
 	private:
 		void SyncWithGraphics() override;

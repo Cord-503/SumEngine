@@ -21,7 +21,10 @@ void RigidBody::Initialize(SumEngine::Graphics::Transform& graphicsTransform, co
 	mMotionState = new btDefaultMotionState(ConvertTobtTransform(graphicsTransform));
 	mRigidBody = new btRigidBody(mMass, mMotionState, shape.mCollisionShape);
 
-	PhysicsWorld::Get()->Register(this);
+	if (addToWorld) {
+		PhysicsWorld::Get()->Register(this);
+	}
+
 
 }
 
@@ -55,6 +58,16 @@ const Math::Vector3 SumEngine::Physics::RigidBody::GetVelocity() const
 bool RigidBody::IsDynamic() const
 {
 	return mMass > 0.0f;
+}
+
+void SumEngine::Physics::RigidBody::Activate()
+{
+	PhysicsWorld::Get()->Register(this);
+}
+
+void SumEngine::Physics::RigidBody::Deactivate()
+{
+		PhysicsWorld::Get()->Unregister(this);
 }
 
 void RigidBody::SyncWithGraphics()

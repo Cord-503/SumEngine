@@ -39,3 +39,4 @@
 #include "Skeleton.h" 
 #include "AnimationUtil.h"
 #include "Animator.h"
+#include "ParticleSystemEffect.h"
