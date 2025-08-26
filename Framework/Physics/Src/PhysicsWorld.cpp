@@ -48,6 +48,7 @@ void PhysicsWorld::Initialize(const Settings& settings)
     mDynamicsWorld = new btDiscreteDynamicsWorld(mDispatcher, mInterface, mSolver, mCollisionConfiguration);
 
     mDynamicsWorld->setGravity(TobtVector3(settings.gravity));
+    mDynamicsWorld->setDebugDrawer(&mPhysicsDebugDrawer);
 }
 
 void PhysicsWorld::Terminate()
@@ -77,6 +78,25 @@ void PhysicsWorld::DebugUI()
         {
             mDynamicsWorld->setGravity(TobtVector3(mSettings.gravity));
         }
+        ImGui::Checkbox("DebugDraw", &mDebugDraw);
+        if (mDebugDraw)
+        {
+            ImGui::Indent();
+                int debugMode = mPhysicsDebugDrawer.getDebugMode();
+                bool isEnabled = (debugMode & btIDebugDraw::DBG_DrawWireframe);
+                if (ImGui::Checkbox("WireFrame", &isEnabled))
+                {
+                    debugMode = (isEnabled) ? debugMode | btIDebugDraw::DBG_DrawWireframe : debugMode & ~btIDebugDraw::DBG_DrawWireframe;
+                }
+                isEnabled = (debugMode & btIDebugDraw::DBG_DrawAabb);
+                if (ImGui::Checkbox("DrawAABB", &isEnabled))
+                {
+                    debugMode = (isEnabled) ? debugMode | btIDebugDraw::DBG_DrawAabb : debugMode & ~btIDebugDraw::DBG_DrawAabb;
+                }            
+                mPhysicsDebugDrawer.setDebugMode(debugMode);
+                mDynamicsWorld->debugDrawWorld();
+            ImGui::Unindent();
+        }
     }
 }
 
@@ -89,20 +109,16 @@ void PhysicsWorld::Register(PhysicsObject* physicsObject)
 
         if (physicsObject->GetRigidBody() != nullptr) 
         {
-            mDynamicsWorld->removeRigidBody(physicsObject->GetRigidBody());
+            mDynamicsWorld->addRigidBody(physicsObject->GetRigidBody());
         }
-
-        mPhysicsObjects.erase(iter);
-
     }
 }
 
 void PhysicsWorld::Unregister(PhysicsObject* physicsObject)
 {
     auto iter = std::find(mPhysicsObjects.begin(), mPhysicsObjects.end(), physicsObject);
-    if (iter == mPhysicsObjects.end())
+    if (iter != mPhysicsObjects.end())
     {
-        mPhysicsObjects.push_back(physicsObject);
 
         if (physicsObject->GetRigidBody() != nullptr)
         {

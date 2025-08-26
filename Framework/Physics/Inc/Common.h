@@ -33,6 +33,16 @@ inline SumEngine::Math::Vector3 ToVector3(const btVector3& v)
 	};
 }
 
+inline SumEngine::Color ToColor(const btVector3& c)
+{
+	return {
+		static_cast<float>(c.getX()),
+		static_cast<float>(c.getY()),
+		static_cast<float>(c.getZ()),
+		1.0f
+	};
+}
+
 
 inline btQuaternion TobtQuaternion(const SumEngine::Math::Quaternion& q)
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PhysicsDebugDraw.h"
 
 namespace SumEngine::Physics
 {
@@ -44,6 +45,9 @@ namespace SumEngine::Physics
 
 		using PhysicsObjects = std::vector<PhysicsObject*>;
 		PhysicsObjects mPhysicsObjects;
+
+		PhysicsDebugDrawer mPhysicsDebugDrawer;
+		bool mDebugDraw = false;
 
 	};
 }
