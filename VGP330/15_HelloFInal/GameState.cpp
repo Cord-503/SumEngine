@@ -8,8 +8,8 @@ using namespace SumEngine::Input;
 void GameState::Initialize()
 {
     // Camera setup
-    mCamera.SetPosition({ 0.0f, 1.0f, -5.0f });
-    mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+    mCamera.SetPosition({ -3.3f, 1.3f, -2.0f });
+    mCamera.SetLookAt({ -2.0f, 1.0f, 0.0f });
 
     // Lighting setup
     mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
@@ -176,8 +176,8 @@ void GameState::DebugUI()
 
     if (ImGui::CollapsingHeader("Outline Settings", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        static float outlineWidth = 0.02f;
-        static float outlineColor[3] = { 0.0f, 0.0f, 0.0f };
+        static float outlineWidth = 0.3f;
+        static float outlineColor[3] = { 254.9f, 254.9f, 254.9f };
 
         if (ImGui::DragFloat("Outline Width", &outlineWidth, 0.001f, 0.0f, 1.0f))
         {

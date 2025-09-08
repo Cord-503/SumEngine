@@ -27,7 +27,11 @@ namespace SumEngine::Graphics
 	template<class T>
 	using Keyframes = std::vector<Keyframe<T>>;
 
+	using AnimationCallback = std::function<void()>;
+
 	using PositionKeys = Keyframes<Math::Vector3>;
 	using RotationKeys = Keyframes<Math::Quaternion>;
 	using ScaleKeys = Keyframes<Math::Vector3>;
+
+	using EventKeys = Keyframes<AnimationCallback>;
 }

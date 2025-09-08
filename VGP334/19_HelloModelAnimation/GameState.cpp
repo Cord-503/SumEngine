@@ -13,6 +13,10 @@ void GameState::Initialize()
 	mCamera.SetPosition({ 0.0f, 2.0f, -5.0f });
 	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
 
+	mCamPosition = { 0.0f, 2.0f, -5.0f };
+	mCamLookAt = { 0.0f, 0.0f, 0.0f };
+	mCamDirction = mCamera.GetDirection();
+
 	mDirectionalLight.direction = Normalize({ 1.0f, -1.0f, 1.0f });
 	mDirectionalLight.ambient = { 0.3f, 0.3f, 0.3f, 1.0f };
 	mDirectionalLight.diffuse = { 0.7f, 0.7f, 0.7f, 1.0f };
@@ -46,6 +50,8 @@ void GameState::Update(float deltaTime)
 {
 	UpdateCamera(deltaTime);
 	mCharacterAnimator.Update(deltaTime);
+	mCamPosition = mCamera.GetPosition();
+	mCamDirction = mCamera.GetDirection();
 }
 
 void GameState::UpdateCamera(float deltaTime)
@@ -86,6 +92,10 @@ void GameState::UpdateCamera(float deltaTime)
 
 void GameState::Render()
 {
+	SimpleDraw::AddGroundPlane(10.0f, Colors::White);
+	SimpleDraw::AddTransform(mTempTransform.GetMatrix4());
+	SimpleDraw::Render (mCamera);
+
 	if (!useSkeleton)
 	{
 		mStandardEffect.Begin();
@@ -98,9 +108,6 @@ void GameState::Render()
 		AnimationUtil::ComputeBoneTransforms(mCharater.modelId, boneTransforms, &mCharacterAnimator);
 		AnimationUtil::DrawSkeleton(mCharater.modelId, boneTransforms);
 	}
-
-	SimpleDraw:: AddGroundPlane(10.0f, Colors::LightGray);
-	SimpleDraw::Render(mCamera);
 
 }
 
@@ -120,13 +127,48 @@ void GameState::DebugUI()
 		ImGui::ColorEdit4("Specular##Light", &mDirectionalLight.specular.r);
 	}
 
-	ImGui::Checkbox("Use Skeleton", &useSkeleton);
-
-	int maxAnim = mCharacterAnimator.GetAnimationCount() - 1;
-	if (ImGui::DragInt("AnimIndex", &mAnimationIndex, 1, -1, maxAnim))
+	if (ImGui::CollapsingHeader("Animation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		mCharacterAnimator.PlayAnimation(mAnimationIndex, true);
+		ImGui::Checkbox("Use Skeleton", &useSkeleton);
 
+		int maxAnim = mCharacterAnimator.GetAnimationCount() - 1;
+		if (ImGui::DragInt("AnimIndex", &mAnimationIndex, 1, -1, maxAnim))
+		{
+			mCharacterAnimator.PlayAnimation(mAnimationIndex, true);
+
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Camera Info", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::DragFloat3("CamPos", &mCamPosition.x, 0.1f))
+		{
+			mCamera.SetPosition(mCamPosition);
+			mCamera.SetLookAt(mCamLookAt);
+		}
+		if (ImGui::DragFloat3("CamDirction", &mCamDirction.x, 0.1f))
+		{
+			mCamera.SetDirection(mCamDirction);
+			mCamera.SetLookAt(mCamLookAt);
+		}
+		if (ImGui::DragFloat3("CamLookPoint", &mCamLookAt.x, 0.1f))
+		{
+			mCamera.SetLookAt(mCamLookAt);
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Character Info", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat3("Character1 Pos", &mTempTransform.position.x, 0.1f);
+
+		if (ImGui::DragFloat3("Character1 Rot", &mRotation.x, 0.1f))
+		{
+			mTempTransform.rotation = Math::Quaternion::CreateFromYawPitchRoll(mRotation.x, mRotation.y, mRotation.z);
+		}
+		if (ImGui::Button("MoveToTransform"))
+		{
+			mCharater.transform = mTempTransform;
+		}
 	}
 
 	mStandardEffect.DebugUI();

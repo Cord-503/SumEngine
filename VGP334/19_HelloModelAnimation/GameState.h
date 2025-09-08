@@ -28,4 +28,11 @@ protected:
 
 	bool useSkeleton = false;
 	int mAnimationIndex = -1;
+
+	SumEngine::Math::Vector3 mRotation = { 0.0f, 0.0f, 0.0f };
+	SumEngine::Graphics::Transform mTempTransform;
+
+	SumEngine::Math::Vector3 mCamLookAt = { 0.0f, 0.0f, 0.0f };
+	SumEngine::Math::Vector3 mCamPosition = { 0.0f, 0.0f, 0.0f };
+	SumEngine::Math::Vector3 mCamDirction = { 0.0f, 0.0f, 0.0f };
 };

@@ -7,6 +7,7 @@ using namespace SumEngine::Core;
 using namespace SumEngine::Graphics;
 using namespace SumEngine::Input;
 using namespace SumEngine::Physics;
+using namespace SumEngine::Audio;
 
 void App::Run(const AppConfig& config)
 {
@@ -27,6 +28,8 @@ void App::Run(const AppConfig& config)
 	SimpleDraw::StaticInitialize(config.maxDrawLines);
 	TextureCache::StaticInitialize("../../Assets/Images");
 	ModelCache::StaticInitialize();
+	AudioSystem::StaticInitialize();
+	SoundEffectManager::StaticInitialize("../../Assets/Sounds");
 
 	PhysicsWorld::Settings settings;
 	PhysicsWorld::StaticInitialize(settings);
@@ -50,6 +53,7 @@ void App::Run(const AppConfig& config)
 			Quit();
 			break;
 		}
+		AudioSystem::Get()->Update();
 
 		if (mNextState != nullptr)
 		{
@@ -88,6 +92,8 @@ void App::Run(const AppConfig& config)
 	DebugUI::StaticTerminate();
 	InputSystem::StaticTerminate();
 	GraphicsSystem::StaticTerminate();
+	SoundEffectManager::StaticTerminate();
+	AudioSystem::StaticTerminate();
 	
 	myWindow.Terminate();
 }
