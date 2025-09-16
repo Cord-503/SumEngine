@@ -8,7 +8,8 @@ enum class SceneState
 	Scene1,
 	Scene2,
 	Scene3,
-	Scene4
+	Scene4,
+	Scene5
 };
 
 class GameState : public SumEngine::AppState
@@ -26,9 +27,11 @@ private:
 	void StopBGM();
 	void UpdateCamera(float deltaTime);
 
-	void UpdateSceneIntro(float deltaTime);
-	void UpdateSceneFight(float deltaTime);
-	void UpdateSceneAftermath(float deltaTime);
+	void UpdateScene1(float deltaTime);
+	void UpdateScene2(float deltaTime);
+	void UpdateScene3(float deltaTime);
+	void UpdateScene4(float deltaTime);
+	void UpdateScene5(float deltaTime);
 
 	SumEngine::Graphics::Camera mCamera;
 	SumEngine::Graphics::DirectionalLight mDirectionalLight;
@@ -54,6 +57,11 @@ private:
 	SceneState mCurrentScene = SceneState::Scene1;
 	float mSceneTime = 0.0f;
 	float mScene2Timer = 0.0f;
+	float mScene3Timer = 0.0f;
+	float mScene4Timer = 0.0f;
+
+
+
 	bool mFireworkTriggered = false;
 	bool mFightAnimation2Played = false;
 	bool mIsCharacter2Visible = false;

@@ -10,7 +10,12 @@
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/TakingPunchR.fbx ../../Assets/Models/Amy/Animations/TakingPunchR.model
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/Martelo1.fbx ../../Assets/Models/Amy/Animations/Martelo1.model
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/Martelo2.fbx ../../Assets/Models/Amy/Animations/Martelo2.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/HurricaneKick.fbx ../../Assets/Models/Amy/Animations/HurricaneKick.model
 
 
 -scale 0.01 ../../Assets/Models/Vegas/Vegas.fbx ../../Assets/Models/Vegas/Vegas.model
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/ReceiveUppercutToTheFace.fbx ../../Assets/Models/Vegas/ReceiveUppercutToTheFace.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/RunBackward.fbx ../../Assets/Models/Vegas/RunBackward.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/StandingMeleeJumpAttack.fbx ../../Assets/Models/Vegas/StandingMeleeJumpAttack.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/BigRibHit.fbx ../../Assets/Models/Vegas/BigRibHit.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/StandingDeath.fbx ../../Assets/Models/Vegas/StandingDeath.model

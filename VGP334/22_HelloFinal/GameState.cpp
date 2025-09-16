@@ -59,8 +59,12 @@ void GameState::Initialize()
 
 	mCharacterAnimator.PlayAnimation(0, true);
 	mCurrentScene = SceneState::Scene1;
+
 	mSceneTime = 0.0f;
 	mScene2Timer = 0.0f;
+	mScene3Timer = 0.0f;
+	mScene4Timer = 0.0f;
+
 	mFireworkTriggered = false;
 	mFightAnimation2Played = false;
 	mIsCharacter2Visible = false;
@@ -72,6 +76,7 @@ void GameState::Terminate()
 	mFirework.Terminate();
 	mFirework2.Terminate();
 	mFirework3.Terminate();
+
 	mStandardEffect.Terminate();
 	mCharater.Terminate();
 	mCharacter2.Terminate();
@@ -95,13 +100,19 @@ void GameState::Update(float deltaTime)
 		switch (mCurrentScene)
 		{
 		case SceneState::Scene1:
-			UpdateSceneIntro(deltaTime);
+			UpdateScene1(deltaTime);
 			break;
 		case SceneState::Scene2:
-			UpdateSceneFight(deltaTime);
+			UpdateScene2(deltaTime);
 			break;
 		case SceneState::Scene3:
-			UpdateSceneAftermath(deltaTime);
+			UpdateScene3(deltaTime);
+			break;
+		case SceneState::Scene4:
+			UpdateScene4(deltaTime);
+			break;
+		case SceneState::Scene5:
+			UpdateScene5(deltaTime);
 			break;
 		}
 	}
@@ -116,7 +127,7 @@ void GameState::Update(float deltaTime)
 	}
 }
 
-void GameState::UpdateSceneIntro(float deltaTime)
+void GameState::UpdateScene1(float deltaTime)
 {
 	mSceneTime += deltaTime;
 
@@ -150,12 +161,13 @@ void GameState::UpdateSceneIntro(float deltaTime)
 	}
 }
 
-void GameState::UpdateSceneFight(float deltaTime)
+void GameState::UpdateScene2(float deltaTime)
 {
 	mCamera.SetPosition({ 0.636f, 1.061f, -2.046f });
 	mCamera.SetDirection(Normalize({ -0.527f, -0.207f, 0.824f }));
 
 	mScene2Timer += deltaTime;
+	mScene3Timer == 0.0;
 
 	if (mScene2Timer >= 0.5f && !mFightAnimation2Played)
 	{
@@ -172,10 +184,39 @@ void GameState::UpdateSceneFight(float deltaTime)
 	}
 }
 
-void GameState::UpdateSceneAftermath(float deltaTime)
+void GameState::UpdateScene3(float deltaTime)
 {
 	mCamera.SetPosition({ -2.329f, 0.925f, -0.665f });
 	mCamera.SetDirection({ 0.870f, 0.085f, 0.486f });
+
+	mScene3Timer += deltaTime;
+	mScene4Timer == 0.0f;
+	if (mScene3Timer >= 1.3f)
+	{
+		mCurrentScene = SceneState::Scene4;
+		mCharacterAnimator.PlayAnimation(4, true);
+		mCharacterAnimator2.PlayAnimation(1, true);
+	}
+
+}
+
+void GameState::UpdateScene4(float deltaTime)
+{
+	mCamera.SetPosition({ -0.306, 1.614, 1.724 });
+	mCamera.SetDirection({ -0.132, -0.319, -0.938 });
+	if (mScene3Timer >= 1.3f)
+	{
+		mCurrentScene = SceneState::Scene5;
+		mCharacterAnimator.PlayAnimation(4, true);
+		mCharacterAnimator2.PlayAnimation(1, true);
+	}
+}
+
+void GameState::UpdateScene5(float deltaTime)
+{
+	mCamera.SetPosition({ -0.306, 1.614, 1.724 });
+	mCamera.SetDirection({ -0.132, -0.319, -0.938 });
+
 }
 
 void GameState::Render()
