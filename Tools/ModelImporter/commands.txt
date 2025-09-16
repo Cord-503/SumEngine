@@ -5,3 +5,12 @@
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Run_Look_Back.fbx ../../Assets/Models/Amy/Run_Look_Back.model
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Breakdance_Freeze_Var3.fbx ../../Assets/Models/Amy/Breakdance_Freeze_Var3.model
 -scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Amy_Firing_Rifle.fbx ../../Assets/Models/Amy/Amy_Firing_Rifle.model
+
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/TakingPunchL.fbx ../../Assets/Models/Amy/Animations/TakingPunchL.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/TakingPunchR.fbx ../../Assets/Models/Amy/Animations/TakingPunchR.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/Martelo1.fbx ../../Assets/Models/Amy/Animations/Martelo1.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Amy/Animations/Martelo2.fbx ../../Assets/Models/Amy/Animations/Martelo2.model
+
+
+-scale 0.01 ../../Assets/Models/Vegas/Vegas.fbx ../../Assets/Models/Vegas/Vegas.model
+-scale 0.01 -animationOnly 1 ../../Assets/Models/Vegas/ReceiveUppercutToTheFace.fbx ../../Assets/Models/Vegas/ReceiveUppercutToTheFace.model
