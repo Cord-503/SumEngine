@@ -23,24 +23,33 @@ void GameState::Initialize()
 	mStandardEffect.SetDirectionalLight(mDirectionalLight);
 
 	mBgmId = SoundEffectManager::Get()->Load("../../Assets/Sounds/PlayOfTheGame.wav");
+	mBgmId2 = SoundEffectManager::Get()->Load("../../Assets/Sounds/ZVPBGM.wav");
 	PlayBGM();
 
 	Mesh groundMesh = MeshBuilder::CreatePlane(20, 20, 1.0f);
 	mGround.meshBuffer.Initialize(groundMesh);
 	mGround.diffuseId = TextureCache::Get()->LoadTexture("misc/concrete.jpg");
 
+
+	//characters
 	mCharater.Initialize("../../Assets/Models/Amy/Amy.model", &mCharacterAnimator);
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Arm_Stretching.model");
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/TakingPunchL.model");
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/TakingPunchR.model");
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/Martelo1.model");
 	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/Martelo2.model");
+	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/HurricaneKick.model");
+	ModelCache::Get()->AddAnimation(mCharater.modelId, "../../Assets/Models/Amy/Animations/HipHopDancing.model");
 
 	mCharacterAnimator.Initialize(mCharater.modelId);
 
 	mCharacter2.Initialize("../../Assets/Models/Vegas/Vegas.model", &mCharacterAnimator2);
 	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/VegasJabCross.model");
 	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/ReceiveUppercutToTheFace.model");
+	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/RunBackward.model");
+	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/StandingMeleeJumpAttack.model");
+	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/BigRibHit.model");
+	ModelCache::Get()->AddAnimation(mCharacter2.modelId, "../../Assets/Models/Vegas/StandingDeath.model");
 
 	mCharacterAnimator2.Initialize(mCharacter2.modelId);
 	mCharacter2.transform.position = { -0.300f, 0.000f, 0.500f };
@@ -64,9 +73,13 @@ void GameState::Initialize()
 	mScene2Timer = 0.0f;
 	mScene3Timer = 0.0f;
 	mScene4Timer = 0.0f;
+	mScene5Timer = 0.0f;
+	mScene6Timer = 0.0f;
+	mScene7Timer = 0.0f;
+	mScene8Timer = 0.0f;
+	mScene9Timer = 0.0f;
 
 	mFireworkTriggered = false;
-	mFightAnimation2Played = false;
 	mIsCharacter2Visible = false;
 	mIsPaused = false;
 }
@@ -96,7 +109,7 @@ void GameState::Update(float deltaTime)
 		mFirework.Update(deltaTime);
 		mFirework2.Update(deltaTime);
 		mFirework3.Update(deltaTime);
-
+		mTimer += deltaTime;
 		switch (mCurrentScene)
 		{
 		case SceneState::Scene1:
@@ -114,12 +127,23 @@ void GameState::Update(float deltaTime)
 		case SceneState::Scene5:
 			UpdateScene5(deltaTime);
 			break;
+		case SceneState::Scene6:
+			UpdateScene6(deltaTime);
+			break;
+		case SceneState::Scene7:
+			UpdateScene7(deltaTime);
+			break;
+		case SceneState::Scene8:
+			UpdateScene8(deltaTime);
+			break;
+		case SceneState::Scene9:
+			UpdateScene9(deltaTime);
+			break;
 		}
 	}
 
 	mCamPosition = mCamera.GetPosition();
 	mCamDirection = mCamera.GetDirection();
-
 	if (!mIsPaused)
 	{
 		mTempTransform.position = mCharater.transform.position;
@@ -155,7 +179,7 @@ void GameState::UpdateScene1(float deltaTime)
 		mCharater.transform.position = { -1.600f, 0.000f, 0.000f };
 		mCharater.transform.rotation = Quaternion::CreateFromYawPitchRoll(0.000f, -1.900f, 0.000f);
 
-		mCharacterAnimator.PlayAnimation(1, false);
+		mCharacterAnimator.PlayAnimation(1, true);
 
 		mIsCharacter2Visible = true;
 	}
@@ -169,17 +193,16 @@ void GameState::UpdateScene2(float deltaTime)
 	mScene2Timer += deltaTime;
 	mScene3Timer == 0.0;
 
-	if (mScene2Timer >= 0.5f && !mFightAnimation2Played)
+	if (mScene2Timer >= 0.5f)
 	{
-		mCharacterAnimator.PlayAnimation(2, false);
-		mFightAnimation2Played = true;
+		mCharacterAnimator.PlayAnimation(2, true);
 	}
 
-	if (mScene2Timer >= 1.5f && mFightAnimation2Played)
+	if (mScene2Timer >= 1.5f)
 	{
 		mCurrentScene = SceneState::Scene3;
 
-		mCharacterAnimator.PlayAnimation(3, true);
+		mCharacterAnimator.PlayAnimation(3, false);
 		mCharacterAnimator2.PlayAnimation(1, true);
 	}
 }
@@ -194,8 +217,8 @@ void GameState::UpdateScene3(float deltaTime)
 	if (mScene3Timer >= 1.3f)
 	{
 		mCurrentScene = SceneState::Scene4;
-		mCharacterAnimator.PlayAnimation(4, true);
-		mCharacterAnimator2.PlayAnimation(1, true);
+		mCharacterAnimator.PlayAnimation(4, false);
+		mCharacterAnimator2.PlayAnimation(1, false);
 	}
 
 }
@@ -204,56 +227,136 @@ void GameState::UpdateScene4(float deltaTime)
 {
 	mCamera.SetPosition({ -0.306, 1.614, 1.724 });
 	mCamera.SetDirection({ -0.132, -0.319, -0.938 });
-	if (mScene3Timer >= 1.3f)
+
+	mScene4Timer += deltaTime;
+	mScene5Timer == 0.0f;
+
+	if (mScene4Timer >= 1.3f)
 	{
 		mCurrentScene = SceneState::Scene5;
-		mCharacterAnimator.PlayAnimation(4, true);
-		mCharacterAnimator2.PlayAnimation(1, true);
+		mCharacterAnimator.PlayAnimation(-1, false);
+		mCharacterAnimator2.PlayAnimation(2, false);
 	}
 }
 
 void GameState::UpdateScene5(float deltaTime)
 {
-	mCamera.SetPosition({ -0.306, 1.614, 1.724 });
-	mCamera.SetDirection({ -0.132, -0.319, -0.938 });
+	mCamera.SetPosition({ -1.554, 1.808, -0.514 });
+	mCamera.SetDirection({ 0.827, -0.476, 0.299 });
 
+	mScene5Timer += deltaTime;
+	mScene6Timer == 0.0f;
+
+	if (mScene5Timer >= 1.5f)
+	{
+		mCurrentScene = SceneState::Scene6;
+		mCharacter2.transform.position = { 5.900f, 0.000f, 0.500f };
+		mCharacter2.transform.rotation = Quaternion::CreateFromYawPitchRoll(0.00f, 7.600f, 0.000f);
+		mCharacterAnimator2.PlayAnimation(3, false);
+	}
 }
+
+void GameState::UpdateScene6(float deltaTime)
+{
+	mCamera.SetPosition({ -1.014, 0.954, -1.569 });
+	mCamera.SetDirection({ 0.922, -0.264, 0.284 });
+
+	mScene6Timer += deltaTime;
+	mScene7Timer == 0.0f;
+
+	if (mScene6Timer >= 2.0f)
+	{
+		mCurrentScene = SceneState::Scene7;
+		mCharacterAnimator2.PlayAnimation(0, false);
+		mCharacterAnimator.PlayAnimation(5, false);
+	}
+}
+
+void GameState::UpdateScene7(float deltaTime)
+{
+	mCamera.SetPosition({ 0.636f, 1.061f, -2.046f });
+	mCamera.SetDirection(Normalize({ -0.527f, -0.207f, 0.824f }));
+
+	mScene7Timer += deltaTime;
+	mScene8Timer == 0.0f;
+
+	if (mScene7Timer >= 2.0f)
+	{
+		mCurrentScene = SceneState::Scene8;
+
+		mCharacterAnimator2.PlayAnimation(5, false);
+	}
+}
+
+void GameState::UpdateScene8(float deltaTime)
+{
+	mCamera.SetPosition({ 5.255, 2.399, -1.592 });
+	mCamera.SetDirection({ 0.152, -0.657, 0.739 });
+
+	mScene8Timer += deltaTime;
+	mScene9Timer == 0.0f;
+
+	if (mScene8Timer >= 3.0f)
+	{
+		mCurrentScene = SceneState::Scene9;
+
+		mCharacterAnimator2.PlayAnimation(-1, false);
+		mCharacterAnimator.PlayAnimation(6, true);
+		PlayBGM2();
+	}
+}
+
+void GameState::UpdateScene9(float deltaTime)
+{
+	mCamera.SetPosition({ 0.509, 0.958, 0.663 });
+	mCamera.SetDirection({ -0.966, -0.128, -0.223 });
+
+	mScene9Timer += deltaTime;
+}
+
+
 
 void GameState::Render()
 {
 	mStandardEffect.SetCamera(mCamera);
 
-	mStandardEffect.Begin();
-	mStandardEffect.Render(mCharater);
-	if (mIsCharacter2Visible)
-	{
-		mStandardEffect.Render(mCharacter2);
-	}
-	mStandardEffect.Render(mGround);
-	mStandardEffect.End();
+	SimpleDraw::AddTransform(mTempTransform.GetMatrix4());
+	SimpleDraw::AddTransform(mTempTransform2.GetMatrix4());
+	SimpleDraw::Render(mCamera);
 
 	mFirework.Render(mCamera);
 	mFirework2.Render(mCamera);
 	mFirework3.Render(mCamera);
 
-	SimpleDraw::AddTransform(mTempTransform.GetMatrix4());
-	SimpleDraw::AddTransform(mTempTransform2.GetMatrix4());
-	SimpleDraw::Render(mCamera);
+
+	mStandardEffect.Begin();
+		mStandardEffect.Render(mCharater);
+		if (mIsCharacter2Visible)
+		{
+			mStandardEffect.Render(mCharacter2);
+		}
+		mStandardEffect.Render(mGround);
+	mStandardEffect.End();
 }
 
 void GameState::DebugUI()
 {
 	ImGui::Begin("debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Text("Scene Time: %.2f / %.2f", mSceneTime + mScene2Timer, mSceneDuration);
+	ImGui::Text("Scene Time: %.2f", mTimer);
+
 	if (ImGui::Button("Restart Scene"))
 	{
 		mCurrentScene = SceneState::Scene1;
 		mSceneTime = 0.0f;
 		mScene2Timer = 0.0f;
+		mScene3Timer = 0.0f;
+		mScene4Timer = 0.0f;
+		mScene5Timer = 0.0f;
+
 		mFireworkTriggered = false;
-		mFightAnimation2Played = false;
 		mIsCharacter2Visible = false;
+		mIsCharacter1Visible = false;
 
 		mCharacterAnimator.PlayAnimation(0, true);
 		mCharacterAnimator2.PlayAnimation(0, true);
@@ -300,6 +403,7 @@ void GameState::DebugUI()
 			{
 				mCamera.SetLookAt(mCamLookAt);
 			}
+
 		}
 	}
 
@@ -358,5 +462,7 @@ void GameState::UpdateCamera(float deltaTime)
 	}
 }
 
-void GameState::PlayBGM() { SoundEffectManager::Get()->Play(mBgmId, true); }
+void GameState::PlayBGM() { SoundEffectManager::Get()->Play(mBgmId, false); }
+void GameState::PlayBGM2() { SoundEffectManager::Get()->Play(mBgmId2, false); }
 void GameState::StopBGM() { SoundEffectManager::Get()->Stop(mBgmId); }
+void GameState::StopBGM2() { SoundEffectManager::Get()->Stop(mBgmId2); }

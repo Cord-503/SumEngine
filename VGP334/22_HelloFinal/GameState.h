@@ -9,7 +9,11 @@ enum class SceneState
 	Scene2,
 	Scene3,
 	Scene4,
-	Scene5
+	Scene5,
+	Scene6,
+	Scene7,
+	Scene8,
+	Scene9
 };
 
 class GameState : public SumEngine::AppState
@@ -25,6 +29,10 @@ public:
 private:
 	void PlayBGM();
 	void StopBGM();
+
+	void PlayBGM2();
+	void StopBGM2();
+
 	void UpdateCamera(float deltaTime);
 
 	void UpdateScene1(float deltaTime);
@@ -32,6 +40,10 @@ private:
 	void UpdateScene3(float deltaTime);
 	void UpdateScene4(float deltaTime);
 	void UpdateScene5(float deltaTime);
+	void UpdateScene6(float deltaTime);
+	void UpdateScene7(float deltaTime);
+	void UpdateScene8(float deltaTime);
+	void UpdateScene9(float deltaTime);
 
 	SumEngine::Graphics::Camera mCamera;
 	SumEngine::Graphics::DirectionalLight mDirectionalLight;
@@ -59,16 +71,22 @@ private:
 	float mScene2Timer = 0.0f;
 	float mScene3Timer = 0.0f;
 	float mScene4Timer = 0.0f;
-
+	float mScene5Timer = 0.0f;
+	float mScene6Timer = 0.0f;
+	float mScene7Timer = 0.0f;
+	float mScene8Timer = 0.0f;
+	float mScene9Timer = 0.0f;
 
 
 	bool mFireworkTriggered = false;
-	bool mFightAnimation2Played = false;
-	bool mIsCharacter2Visible = false;
 
-	const float mSceneDuration = 10.0f;
+	bool mIsCharacter2Visible = false;
+	bool mIsCharacter1Visible = false;
+
+	const float mSceneDuration = 50.0f;
 	float mTimer = 0.0f;
 	SumEngine::Audio::SoundId mBgmId;
+	SumEngine::Audio::SoundId mBgmId2;
 	bool mIsPaused = false;
 
 	SumEngine::Math::Vector3 mCamPosition = { 0.0f, 0.0f, 0.0f };
